@@ -3,7 +3,7 @@
   :url "http://notifyblaster.com"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :plugins [[lein-cljsbuild "0.2.7"]]
+  :plugins [[lein-cljsbuild "0.2.10"]]
   :dependencies [[org.clojure/clojure "1.4.0"]
                  ;;web server
                  [compojure "1.1.3"]
@@ -14,7 +14,7 @@
                  [postgresql/postgresql "9.1-901.jdbc4"]
                  [org.clojure/java.jdbc "0.1.1"]
                  ;;client side, html/javascript
-                 [org.clojure/clojurescript "0.0-1450"]
+                 [org.clojure/clojurescript "0.0-1572"]
                  [domina "1.0.0"]
                  [hiccup "1.0.2"]
                  [jayq "0.3.2"]

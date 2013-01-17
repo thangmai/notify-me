@@ -2,12 +2,15 @@
   (:require-macros
    [jayq.macros :as jq-macros])
   (:use
-   [notify_blaster.models.validation.core :only [validate *is-unique?*]]
-   [notify_blaster.models.validation.office :only [rules]]
-   [jayq.util :only [clj->js]])
+   [notify-blaster.models.validation.core :only [validate *is-unique?*]]
+   [jayq.util :only [clj->js]]
+   [domina.css :only [sel]])
   (:require
+   [notify-blaster.models.validation.office :as office-rules]
+   [notify-blaster.models.validation.user :as user-rules]
    [jayq.core :as jq]
    [domina :as d]
+   [notify-blaster.forms :as f]
    [domina.events :as events]
    [cljs.reader :as reader]))
 
@@ -21,6 +24,7 @@
   (binding [*fn-test* (fn [] "dynamic") ]
     (.log js/console (test-method {:type :something}))))
 
+
 (defn bug2 []
   (binding [*fn-test* (fn [] "dynamic") ]
     (map #(test-method {:type :something}) (range 10))))
@@ -33,32 +37,44 @@
       (do
         (.log js/console x) x))))
 
-(defn is-unique?
-  [office-name]
-  (when office-name
+(defn is-office-unique?
+  [office-name office-id]
+  (if (and office-name (> (count office-name) 0))
     {:deferred (.ajax js/$ (format "%s/unique" office-name))
      :fn reader/read-string}
-    ))
+    ;;if the field is empty it's going to fail with the :required condition
+    true))
 
-(defn- valid-office?
+(defn- validate-admin
   [office]
-  (binding [*is-unique?* is-unique?]
-    (validate office rules {} (fn [errors] (js/alert errors)))))
+  (if (d/by-id "username")
+    (let [admin (merge office {:roles [:user]})]
+      (binding [*is-unique?* (fn [x] true)] ;;new office user always is unique
+       (validate admin user-rules/rules {}
+              (fn [errors]
+                (if (empty? errors)
+                  (f/submit-form "office-form")
+                  (f/show-errors errors))))))
+    (f/submit-form "office-form")))
 
-(defn serialize-form
-  [form-id]
-  (let [a (.serializeArray (js/$ (str "#" form-id " > form")))]
-    (reduce #(merge %1 {(get %2 "name") (get %2 "value")}) {} (js->clj a))))
+(defn- validate-and-save
+  [office]
+  (f/remove-errors)
+  (binding [*is-unique?* is-office-unique?]
+    (validate office office-rules/rules {}
+              (fn [errors]
+                (if (empty? errors)
+                  (validate-admin office)
+                  (f/show-errors errors))))))
 
 (defn save-office
   [event]
-  (let [office-values (serialize-form "office-form")]
-    (valid-office? office-values)))
+  (let [office-values (f/serialize-form "office-form")]
+    (validate-and-save office-values)))
 
 (defn cancel
   [event]
   (.log js/console (is-unique? "presidencia")))
-
 
 (defn ^:export main
   []

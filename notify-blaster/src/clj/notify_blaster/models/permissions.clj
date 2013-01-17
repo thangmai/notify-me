@@ -12,6 +12,9 @@
 (defn current-user-id []
   (:id (friend/current-authentication)))
 
+(defn current-office-id []
+  (:office_id (friend/current-authentication)))
+
 (defn can-modify-profile? [user]
   (or
    (= user (current-username))

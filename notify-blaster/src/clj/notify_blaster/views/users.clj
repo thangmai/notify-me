@@ -3,38 +3,58 @@
         [hiccup.page :only [doctype]]
         [hiccup.def :only [defelem]])
   (:require [notify-blaster.views.layout :as layout]
-            [hiccup.form :as form]))
+            [hiccup.form :as f]
+            [notify-blaster.views.forms :as form]))
 
-(defn show-new [])
-(defn show [&args])
-(defn edit [&args])
+(defn user-form
+  [action user errors]
+  [:div {:id "user-form"}
+   [:p  {:id "form-message" :style "display:none"}]
+   (form/form (str "/users/" (:id user))
+         (form/field
+          (f/label "username" "Usuario")
+          (form/text-field action "username" (:username user)))
+         (form/field
+          (f/label "display_name" "Nombre completo")
+          (form/text-field action "display_name" (:display_name user)))
+         (form/field
+          (f/label "email" "Email")
+          (f/email-field "email" (:email user)))
+         (form/field
+          (f/label "password" "Clave")
+          (f/password-field  "password" (and user "xxxxxxxx")))
+         (form/field
+          (f/label "password-match" "Reingrese la Clave")
+          (f/password-field  "password-match"))
+         )
 
-(defelem input-button
-  [name text]
-  [:input {:type "button" :value text :id name}])
+   (form/input-button "save" "Guardar")
+   (form/input-button "cancel" "Cancelar")])
 
-(defn user-form []
-  [:div {:id "shout-form" :class "sixteen columns alpha omega"}
-   (form/form-to [:post "/offices/save"]
-                 [:p
-                  (form/label "name" "Nombre de la oficina")
-                  (form/text-field "name")]
-                 [:p
-                  (form/label "description" "Descripcion")
-                  (form/text-field "description")]
-                 [:p
-                  (form/submit-button "Guardar")
-                  (input-button "cancel" "Cancelar")]
-            )])
-
-(defn display-users [offices]
+(defn display-users [users]
   [:div {:id "shouts sixteen columns alpha omega"}
    (map
-    (fn [office] [:h2 {:class "shout"} (h (:name office))])
-    offices)])
+    (fn [user] [:h2 {:class "shout"} (h (:name user))])
+    users)])
 
-(defn index [offices]
-  (layout/common "User"
+(defn index [users]
+  (layout/common "Office"
                  (user-form)
                  [:div {:class "clear"}]
-                 (display-users offices)))
+                 (display-users users)))
+
+(defn- get-title
+  [action user]
+  (get {:new "Nuevo Usuario"
+        :edit (:username user)} action))
+
+(defn render-form
+  ([action]
+     (render-form action nil nil))
+  ([action user]
+     (render-form action user nil))
+  ([action user errors]
+     (layout/common (get-title action user)
+                    (user-form action user errors)
+                    [:div {:id "user-id" :style "display:none"} (:id user)]
+                    [:script {:type "text/javascript" :language "javascript"} "notify_blaster.user.main();"])))

@@ -8,8 +8,8 @@
 
 
 (defn credential-fn
-  [username]
-  (user/one {:username username}))
+  [email]
+  (user/one {:email email}))
 
 (defn session-store-authorize [{:keys [uri request-method params session]}]
   (when (nil? (:cemerick.friend/identity session))
@@ -21,7 +21,7 @@
   (friend/authenticate
    ring-app
    {:credential-fn (partial creds/bcrypt-credential-fn credential-fn)
-    :workflows [(workflows/interactive-form), users/create!, session-store-authorize]
+    :workflows [(workflows/interactive-form), users/create-new!, session-store-authorize]
     :login-uri "/login"
     :unauthorized-redirect-uri "/login"
     :default-landing-uri "/"}))

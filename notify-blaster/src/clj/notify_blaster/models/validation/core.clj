@@ -1,12 +1,13 @@
 (ns notify-blaster.models.validation.core)
 
-(def ^{:dynamic true} *is-unique?* (fn [value] false))
+(def ^{:dynamic true} *is-unique?* (fn [value id] false))
 (def ^{:dynamic true} *default-messages* {:unique "Value %s is aready taken, please choose another one"
                                           :required "Field is required"
                                           :min-length "Field is shorter than required"
                                           :max-length "Field is longer than required"
                                           :range "Field value %s is not in range"
-                                          :email "Field must be a valid email address"})
+                                          :email "Field must be a valid email address"
+                                          :matches "Fields do not match"})
 (defmulti valid-field? :type)
 
 (defmethod valid-field? :default
@@ -21,9 +22,9 @@
   (and value (re-matches *email-regex* value)))
 
 (defmethod valid-field? :unique
-  [{value :value}]
+  [{value :value form-values :form-values}]
   ;TODO: uniqueness function should be field-name based
-  (*is-unique?* value))
+  (*is-unique?* value (:id form-values)))
 
 (defmethod valid-field? :range
   [{value :value r :rule}]
@@ -34,6 +35,10 @@
 (defmethod valid-field? :max-length
   [{value :value max :rule}]
   (<= (count value) max))
+
+(defmethod valid-field? :matches
+  [{value :value match :rule form-values :form-values}]
+  (=  value (get form-values match)))
 
 (defmethod valid-field? :min-length
   [{value :value min :rule}]
@@ -54,24 +59,6 @@
                     (get *default-messages* rule-id))]
     (format message (str value))))
 
-(defn validate-field-rules2
-  "Returns a list of error messages if the given field
-   has any failed rule."
-  [form-values field-rules]
-  (let [name (field-rules 0)
-        value (get form-values name)
-        rule-list (field-rules 1)]
-    (when rule-list
-      (let [validations (doall (reduce #(merge %1 {(%2 0) (valid-field? {:type (%2 0) :value value :rule (%2 1)})}) {} (:validations rule-list)))
-            pendings (filter #(-> (% 1) :deferred) validations)
-            errors (filter #(not (%1)) validations)
-            ;;errors (doall (filter #(not (valid-field? {:type (% 0) :value value :rule (% 1)})) (:validations rule-list)))
-            ]
-        ;;join deferreds
-        (if (first errors)
-          {name (map #(get-message name value rule-list %) errors)})))))
-
-
 (defn append-on-error
   [errors name result]
   (if (not (= result true))
@@ -79,6 +66,8 @@
     errors))
 
 (defn join-deferreds
+  "Wait for all deferreds to finish and then issue
+   a callback with the complete list of errors"
   [pendings errors callback]
   (if-let [p (first pendings)]
     (let [rule-id (p 0)
@@ -86,12 +75,9 @@
           afn (-> (p 1) :fn)]
       (.then promise
              (fn [response, status, jqxhr]
-               (join-deferreds (rest pendings) (append-on-error errors rule-id (afn response)) callback)
-               )
+               (join-deferreds (rest pendings) (append-on-error errors rule-id (afn response)) callback))
              (fn [e]
-               (join-deferreds (rest pendings) (append-on-error errors rule-id false) callback)
-               )
-             ))
+               (join-deferreds (rest pendings) (append-on-error errors rule-id false) callback))))
     (callback errors)))
 
 
@@ -103,7 +89,10 @@
         value (get form-values name)
         rule-list (field-rules 1)]
     (when rule-list
-      (let [validations (doall (reduce #(merge %1 {(%2 0) (valid-field? {:type (%2 0) :value value :rule (%2 1)})}) {} (:validations rule-list)))
+      (let [validations (doall (reduce #(merge %1 {(%2 0) (valid-field? {:type (%2 0)
+                                                                         :value value
+                                                                         :rule (%2 1)
+                                                                         :form-values form-values})}) {} (:validations rule-list)))
             pendings (doall (filter #(and (coll? (% 1)) (-> (% 1) :deferred)) validations))
             errors (doall (filter #(not (% 1)) validations))]
         (join-deferreds pendings errors
@@ -112,8 +101,9 @@
                             (callback {name (map #(get-message name value rule-list %) errors)})
                             (callback nil))))))))
 
-
 (defn validate
+  "Validates a list of attributes of the form
+   Given a set of validation rules"
   [form-values rules errors callback]
   (validate-field-rules
      form-values
@@ -125,9 +115,4 @@
            (callback acc-errors)
            (validate form-values pending-rules acc-errors callback))))))
 
-(defn validate2
-  "Validates a list of attributes of the form
-   Given a set of validation rules"
-  [form-values rules]
-  (reduce #(merge %1 (validate-field-rules form-values %2)) {} rules))
 

@@ -17,7 +17,7 @@
   (up []
       (create
        (tbl :user
-            (varchar :username 50 :unique)
+            (varchar :username 50)
             (check :username (> (length :username) 1))
             (varchar :display_name 255)
             (varchar :email 255 :unique)
@@ -34,11 +34,11 @@
   (up []
       (create
        (tbl :contact
-            (varchar :name 100 :unique)
+            (varchar :name 100)
             (varchar :type 20)
-            (varchar :cell_phone 20)
+            (varchar :cell_phone 20 :unique)
             (refer-to :office)))
-      (create (index :contact [:name :office_id] :unique)))
+      (create (index :contact [:cell_phone :office_id] :unique)))
   (down []
         (drop (table :contact))))
 
@@ -56,9 +56,11 @@
 
 (defmigration add-contact_group_members-table
   (up []
+      
       (create
        (tbl :contact_group_member
             (refer-to :contact_group)
+
             (refer-to :contact)
             (refer-to :contact_group :group_id)
             (refer-to :office))))

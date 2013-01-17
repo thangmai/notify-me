@@ -3,34 +3,42 @@
         [hiccup.page :only [doctype]]
         [hiccup.def :only [defelem]])
   (:require [notify-blaster.views.layout :as layout]
-            [hiccup.form :as form]))
+            [hiccup.form :as f]
+            [notify-blaster.views.forms :as form]))
 
-(defelem input-button
-  [name text]
-  [:input {:type "button" :value text :id name}])
-
-(defmacro text-field
-  [action name value]
-  `(let [field# (form/text-field ~name ~value)
-         disabled# (= ~action :show)]
-     (if disabled#
-       (assoc-in field# [1 :disabled] true)
-       field#)))
+(defn when-new
+  [office & body]
+  (when-not office
+     (map identity body)))
 
 (defn office-form
   [action office errors]
-  [:div {:id "office-form" :class "sixteen columns alpha omega"}
-   (form/form-to [:post (str "/offices/" (:id office))]
-                 [:p
-                  (form/label "name" "Nombre de la oficina")
-                  (text-field action "name" (:name office))]
-                 [:p
-                  (form/label "description" "Descripcion")
-                  (text-field action "description" (:description office))]
-                 [:p
-                  (input-button "save" "Guardar")
-                  (input-button "cancel" "Cancelar")]
-            )])
+  [:div {:id "office-form"}
+   [:p  {:id "form-message" :style "display:none"}]
+   (form/form (str "/offices/" (:id office))
+         (form/field
+          (f/label "name" "Nombre")
+          (form/text-field action "name" (:name office)))
+         (form/field
+          (f/label "description" "Descripción")
+          (form/text-field action "description" (:description office)))
+         (when-new office
+           [:tr [:th [:h3 "Administrador"]] [:td]]
+           (form/field
+            (f/label "username" "Nombre")
+            (form/text-field action "username" ""))
+           (form/field
+            (f/label "email" "Email")
+            (f/email-field "email"))
+           (form/field
+            (f/label "password" "Clave")
+            (f/password-field "password"))
+           (form/field
+            (f/label "password-match" "Repita la Clave")
+            (f/password-field "password-match"))))
+
+   (form/input-button "save" "Guardar")
+   (form/input-button "cancel" "Cancelar")])
 
 (defn display-offices [offices]
   [:div {:id "shouts sixteen columns alpha omega"}
@@ -50,6 +58,6 @@
   ([action office]
      (render-form action office nil))
   ([action office errors]
-     (layout/common "Office Form"
+     (layout/common "Nueva Oficina"
                     (office-form action office errors)
                     [:script {:type "text/javascript" :language "javascript"} "notify_blaster.office.main();"])))

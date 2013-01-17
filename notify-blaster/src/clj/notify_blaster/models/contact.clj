@@ -1,30 +1,30 @@
-
-(ns notify-blaster.models.office
+(ns notify-blaster.models.contact
   (:require notify-blaster.models.db
             [notify-blaster.models.entities :as e])
   (:use korma.core
-        notify-blaster.utils)
+        notify-blaster.utils))
 
-  (:import org.mindrot.jbcrypt.BCrypt))
-
-(declare one)
 
 (defn create!
   [attributes]
-  (insert e/office (values attributes)))
+  (insert e/contact (values attributes)))
 
 (defn update!
   [conditions attributes]
-  (update e/office
+  (update e/contact
           (set-fields attributes)
           (where conditions)))
 
 (defn one
   [conditions]
-  (first (select e/office
+  (first (select e/contact
                  (where conditions)
                  (limit 1))))
 
+(defn search
+  [conditions]
+  (select e/contact (where conditions)))
+
 (defn all
   []
-  (select e/office))
+  (select e/contact))

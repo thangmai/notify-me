@@ -1,98 +1,77 @@
 (ns notify-blaster.controllers.users
-  (:require [notify-blaster.models.user :as user]
-            [notify-blaster.views.users :as view]
-            [ring.util.response :as res]
-            [cemerick.friend :as friend]
-            [cemerick.friend.workflows :as workflows])
-  (:use notify-blaster.models.permissions))
-
-(defmacro view
-  "provides defaults for the map provided to view functions and allows
-  you to provide additional key value pairs. Assumes that a variable
-  named req exists"
-
-  [view-fn & keys]
-  `(let [x# {:current-auth (friend/current-authentication)
-             :errors {}
-             :params (:params ~'req)
-             :req ~'req}]
-     (~view-fn (into x# (map vec (partition 2 ~(vec keys)))))))
-
-(defmacro if-valid
-  [to-validate validations errors-name & then-else]
-  `(let [to-validate# ~to-validate
-         validations# ~validations
-         ~errors-name (= to-validate# validations#)]
-     (if (empty? ~errors-name)
-       ~(first then-else)
-       ~(second then-else))))
+  (:require
+   [notify-blaster.models.user :as model]
+   [notify-blaster.views.users :as view]
+   [ring.util.response :as res]
+   [cemerick.friend :as friend]
+   [cemerick.friend.workflows :as workflows]
+   [notify-blaster.models.validation.user :as user-rules])
+  (:use
+   [notify-blaster.models.permissions]
+   [compojure.core :only [defroutes GET POST]]
+   [notify-blaster.models.validation.core :only [validate *is-unique?*]]
+   [notify-blaster.utils]))
 
 
 (defn all
+  "Renders a view with all the defined users"
   []
-  (user/all))
-
-(defn show-new
-  [req]
-  (view view/show-new))
-
-(defn user-from-req
-  [req]
-  (user/for-user-page (:params req)))
-
-(defn create!
-  [req]
-  (let [{:keys [uri request-method params]} req]
-    (when (and (= uri "/users")
-               (= request-method :post))
-      (if-valid
-       params
-       (:create user/validation-contexts)
-       errors
-       
-       (workflows/make-auth (user/create! params))
-       {:body (view view/show-new :errors errors)}))))
+  (view/index (model/all)))
 
 (defn show
-  [req]
-  (view
-   view/show
-   :user (user-from-req req)))
+  "Renders a user form read-only"
+  [id]
+  (when-let [user (model/one {:id (str->int id)})]
+    (view/render-form :show user)))
+
+(defn is-unique?
+  ([username]
+     (is-unique? username nil))
+  ([username user-id]
+     (let [office-id (current-office-id)
+           user (model/one {:username username :office_id office-id})]
+       (or (nil? user)
+           (= (str (:id user)) user-id)))))
 
 (defn edit
-  [req]
-  (let [username (get-in req [:params :username])]
-    (protect
-     (can-modify-profile? username)
-     (view
-      view/edit
-      :user (user/one {:username username})))))
+  "Renders an edition form for the specified user"
+  [id]
+  (when-let [user (model/one {:id (str->int id)})]
+    (view/render-form :edit user)))
 
-;; TODO don't really need to have a redirect here do I?
+(defn show-new
+  "Render empty user form"
+  []
+  (view/render-form :new))
+
+(defn- validate-and-save
+  [user callback]
+  (binding [*is-unique?* is-unique?]
+    ;;TODO: this should account for deferred validations and wait on
+    ;; the response, now assumes callback is called on the same thread
+    (validate user user-rules/rules {}
+              (fn [errors]
+                (if (empty? errors)
+                  (callback)
+                  errors)))))
+
+(defn create-new!
+  [params]
+  (println params))
+
+(defn create!
+  "Creates a new user, all users are created as standard users, no admins"
+  [params]
+  (let [user (merge params {:roles [:user] :office_id (current-office-id)})]
+    (validate-and-save user (fn [] (model/create! user)))))
+
 (defn update!
-  [req]
-  (let [params   (:params req)
-        username (:username params)]
-    (protect
-     (can-modify-profile? username)
-     (let [validations (cond
-                        (:change-password params)
-                        ((:change-password user/validation-contexts)
-                         (let [user (user/one {:username username})] (:password user)))
-                        
-                        (:email params)
-                        (:update-email user/validation-contexts)
-                        
-                        :else {})]
-       
-       (if-valid
-        params validations errors
-        (let [new-attributes (if (:change-password params)
-                               {:password (get-in params [:change-password :new-password])}
-                               (dissoc params :username))]
-          (user/update! {:username username} new-attributes)
-          (res/redirect (str "/users/" username "/edit?success=true")))
-        (view
-         view/edit
-         :user params
-         :errors errors))))))
+  "Updates an existing user, if passwords fields are posted password
+  is changed, otherwise the fields are left as-is in the database"
+  [id params]
+  (let [password (or (:password params) "xxxxxx")
+        password-match (or (:password-match params) "xxxxxx")
+        user (merge params {:password password :password-match password-match})]
+    (validate-and-save
+     user (fn [] (let [u (if (:password params) user params)]
+                   (model/update! {:id (str->int id)} (dissoc u :id)))))))

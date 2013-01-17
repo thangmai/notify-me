@@ -14,8 +14,9 @@
    (fn [attributes]
      (-> (if (:password attributes)
            (assoc attributes :password (creds/hash-bcrypt (:password attributes)))
-            attributes)
-         (assoc :roles (str [:user])))))
+           attributes)
+         (assoc :roles (str (:roles attributes)))
+         (dissoc :password-match))))
   (transform #(deserialize % :roles)))
 
 (defentity contact
@@ -25,7 +26,7 @@
   (belongs-to office))
 
 (defentity contact_group_member
-  (belongs-to group)
+  (belongs-to contact_group)
   (belongs-to contact)
   (belongs-to office))
 

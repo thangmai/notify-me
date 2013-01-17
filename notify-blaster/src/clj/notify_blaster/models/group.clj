@@ -1,0 +1,60 @@
+(ns notify-blaster.models.group
+  (:require notify-blaster.models.db
+            [notify-blaster.models.entities :as e])
+  (:use korma.core
+        korma.db
+        notify-blaster.utils))
+
+
+(defn create!
+  [attributes]
+  (let [group (select-keys attributes [:name :description :office_id :type])
+        members (:members attributes)]
+      (transaction
+       (let [g (insert e/contact_group (values group))]
+         (doall
+          (map #(insert e/contact_group_member
+                        (values {:contact_group_id (:id g)
+                                 :contact_id (str->int (:id %))
+                                 :office_id (:office_id g)}))
+             members)))
+       )))
+
+(defn update!
+  [conditions attributes]
+  (println (str "Updating group " attributes " on condition " conditions))
+  (let [group (select-keys attributes [:name :description :type])
+        members (:members attributes)]
+    (transaction
+     (update e/contact_group
+            (set-fields group)
+            (where conditions))
+     ;;this is evil but there are no FK to the members so its easier
+     ;;to prune and reinsert than to diff against the DB
+     (delete e/contact_group_member
+             (where {:contact_group_id (str->int (:id attributes))}))
+     (map #(insert e/contact_group_member
+                        (values {:contact_group_id (str->int (:id attributes))
+                                 :contact_id (str->int (:id %))
+                                 :office_id (:office_id attributes)}))
+             members)
+     )))
+
+(defn- get-members
+  [group]
+  (select e/contact
+          (join :inner e/contact_group_member
+                (and
+                 (= :contact_group_member.contact_id :contact.id)
+                 (= :contact_group_member.contact_group_id (:id group))))))
+
+(defn one
+  [conditions]
+  (when-let [group (first (select e/contact_group
+                 (where conditions)
+                 (limit 1)))]
+    (assoc group :members (get-members group))))
+
+(defn all
+  []
+  (select e/contact_group))
