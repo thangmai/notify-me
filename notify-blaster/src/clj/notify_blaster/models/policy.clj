@@ -1,0 +1,29 @@
+(ns notify-blaster.models.policy
+  (:require notify-blaster.models.db
+            [notify-blaster.models.entities :as e])
+  (:use korma.core
+        notify-blaster.utils))
+
+(defn create!
+  [attributes]
+  (insert e/delivery_policy (values attributes)))
+
+(defn update!
+  [conditions attributes]
+  (update e/delivery_policy
+          (set-fields attributes)
+          (where conditions)))
+
+(defn one
+  [conditions]
+  (first (select e/delivery_policy
+                 (where conditions)
+                 (limit 1))))
+
+(defn search
+  [conditions]
+  (select e/delivery_policy (where conditions)))
+
+(defn all
+  []
+  (select e/delivery_policy))

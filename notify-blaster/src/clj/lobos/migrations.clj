@@ -72,9 +72,8 @@
       (create
        (tbl :delivery_policy
             (varchar :name 50 :unique)
-            (integer :no_answer_retries)
             (integer :retries_on_error (default 10))
-            (integer :busy_intervals_secs (default 60))
+            (integer :busy_interval_secs (default 60))
             (integer :no_answer_interval_secs (default 300))
             (integer :no_answer_retries (default 5))
             (refer-to :office)))

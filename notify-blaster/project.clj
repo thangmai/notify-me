@@ -22,7 +22,9 @@
                  [com.taoensso/tower "1.2.0"]
                  ;;authentication
                  [com.cemerick/friend "0.1.2"]
-                 [crypto-random "1.1.0"]]
+                 [crypto-random "1.1.0"]
+                 ;;quartz wrapper for jobs
+                 [clojurewerkz/quartzite "1.0.1"]]
   :source-paths ["src/clj"]
   :hooks [leiningen.cljsbuild]
   :main notify-blaster.server

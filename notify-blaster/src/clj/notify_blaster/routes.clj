@@ -9,6 +9,8 @@
    [notify-blaster.controllers.users :as users]
    [notify-blaster.controllers.contacts :as contacts]
    [notify-blaster.controllers.groups :as groups]
+   [notify-blaster.controllers.policies :as policies]
+   [notify-blaster.controllers.notifications :as notifications]
    [notify-blaster.controllers.session :as session])
   (:use
      ring.middleware.params
@@ -62,6 +64,23 @@
   (POST "/:id" request (groups/update! (read-string (slurp (:body request))))))
 
 
+(defroutes ^{:private true} policy-routes
+  (GET "/" [] (policies/all))
+  (GET "/new" [] (policies/show-new))
+  (POST "/" request (policies/create! (read-string (slurp (:body request)))))
+  (GET "/:id" [id] (policies/show id))
+  (GET "/:id/edit" [id] (policies/edit id))
+  (GET "/:name/unique" [name] (pr-str (policies/is-unique? name)))
+  (GET "/:id/:name/unique" [id name] (pr-str (policies/is-unique? name id)))
+  (POST "/:id" request (policies/update! (read-string (slurp (:body request))))))
+
+
+(defroutes ^{:private true} notification-routes
+  (GET "/" [] (notifications/all))
+  (GET "/new" [] (notifications/show-new))
+  (POST "/" request (notifications/create! (read-string (slurp (:body request)))))
+  (GET "/:id" [id] (notifications/show id)))
+
 (defroutes routes
   ;;files
   (route/resources "/")
@@ -77,6 +96,11 @@
   (context "/contacts" request (friend/wrap-authorize contact-routes #{:user :admin}))
   ;;groups
   (context "/groups" request (friend/wrap-authorize group-routes #{:user :admin}))
+  ;;policies
+  (context "/policies" request (friend/wrap-authorize policy-routes #{:user :admin}))
+  ;;notifications
+  (context "/notifications" request (friend/wrap-authorize notification-routes #{:user :admin}))
+
   
   ;; auth
   (GET "/login" request session/show-new)

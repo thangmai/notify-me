@@ -31,7 +31,8 @@
   (belongs-to office))
 
 (defentity delivery_policy
-  (belongs-to office))
+  (belongs-to office)
+  (prepare #(str->int % :retries_on_error :busy_interval_secs :no_answer_retries :no_answer_interval_secs)))
 
 (defentity notification
   (belongs-to office)
