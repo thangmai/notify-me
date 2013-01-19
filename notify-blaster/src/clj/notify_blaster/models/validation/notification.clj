@@ -1,12 +1,32 @@
 (ns notify-blaster.models.validation.notification)
 
 (def rules
-  { :name  {:validations
-            {:unique true
-             :required true
-              :max-length 50}
+  {:type  {
+           :validations
+           {
+            :required true
+            }
+           :messages
+           {
+            :required "Debe seleccionar algun mecanismo de despacho, sms, llamada, o ambos."}
+           }
+   :message  {
+              :validations
+              {
+               :required true
+               }
+              :messages
+              {
+               :required "El mensaje a enviar es requerido, por favor ingreselo."}
+              }
+   :members {
+             :validations
+             {
+               :required true
+               }
              :messages
-            {:unique "El nombre %s ya esta en uso"
-             :required "El nombre de las politicas de entrega es requerido."
-              :max-length "El largo del nombre no puede superar los 100 caracteres"}}
-   })
+             {
+               :required "Debe seleccionar algun destinatario de la notificacion"}
+             }
+   }
+  )

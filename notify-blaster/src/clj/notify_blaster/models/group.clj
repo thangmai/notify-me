@@ -48,6 +48,11 @@
                  (= :contact_group_member.contact_id :contact.id)
                  (= :contact_group_member.contact_group_id (:id group))))))
 
+
+(defn search
+  [conditions]
+  (select e/contact_group (where conditions)))
+
 (defn one
   [conditions]
   (when-let [group (first (select e/contact_group

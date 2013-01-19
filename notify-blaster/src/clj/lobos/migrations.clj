@@ -86,9 +86,10 @@
       (create
        (table :notification
               (varchar :id 50 :primary-key)
+              (varchar :type 10)
               (varchar :status 20)
               (timestamp :created (default (now)))
-              (varchar :mesage 200)
+              (varchar :message 200)
               (refer-to :office)
               (refer-to :delivery_policy))))
   (down []

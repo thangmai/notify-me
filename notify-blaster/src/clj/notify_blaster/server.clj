@@ -8,5 +8,6 @@
   []
   (qs/initialize)
   (qs/start)
+  (qs/unschedule-job (notifier/id))
   (qs/schedule (notifier/job) (notifier/trigger))
   (webserver/start []))

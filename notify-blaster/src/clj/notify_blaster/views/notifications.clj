@@ -6,33 +6,56 @@
             [hiccup.form :as f]
             [notify-blaster.views.forms :as form]))
 
+
+(defmacro recipient-row
+  [recipient type]
+  `[:tr
+   [:td (:id ~recipient)]
+   [:td (:name ~recipient)]
+   [:td ~type]])
+
+(defn- create-contact-table
+  [id contacts groups]
+  [:table {:id id}
+   [:thead [:tr [:th "Id"] [:th "Nombre"] [:th "Tipo"]]]
+   [:tbody
+    (concat
+     (map #(recipient-row % "C") contacts)
+     (map #(recipient-row % "G") groups))
+    ]])
+
 (defn notification-form
-  [action notification errors]
+  [notification policies contacts groups]
   [:div {:id "notification-form"}
    [:p  {:id "form-message" :style "display:none"}]
-   (form/form (str "/policies/" (:id notification))
+   (form/form "/notifications/"
+              
          (form/field
-          (f/label "name" "Nombre")
-          (form/text-field action "name" (:name notification)))
-        
-         (form/field
-          (f/label "no_answer_retries" "Reintentos si no atiende")
-          (form/text-field action "no_answer_retries" (:no_answer_retries notification)))
-
-         (form/field
-          (f/label "retries_on_error" "Reintentos en caso de error")
-          (form/text-field action "retries_on_error" (:retries_on_error notification)))
-
-         (form/field
-          (f/label "busy_interval_secs" "Intervalo en ocupado(segs)")
-          (form/text-field action "busy_interval_secs" (:busy_interval_secs notification)))
-
-         (form/field
-          (f/label "no_answer_interval_secs" "Intervalo si no atiende(segs)")
-          (form/text-field action "no_answer_interval_secs" (:no_answer_interval_secs notification)))
+          (f/label "message" "Mensaje")
+          (f/text-area "message"))
          
-         )
+         (form/field
+          (f/label "sms" "Enviar SMS")
+          (f/check-box "sms"))
+         
+         (form/field
+          (f/label "call" "Llamar")
+          (f/check-box "call"))
 
+         (form/field
+          (f/label "delivery_policy_id" "Reglas de Despacho")
+          (f/drop-down "delivery_policy_id"
+                       (vec (map (fn [p] [(:name p) (:id p)]) policies))
+                       (:delivery_policy_id notification))))
+   
+   [:div {:id "contacts"}
+    [:div {:class "contact-table"}
+     [:h4 "Contactos Disponibles"]
+     (create-contact-table "available-recipients" contacts groups)]
+    [:div {:class "contact-table"}
+     [:h4 "Contactos a Notificar"]
+     (create-contact-table "assigned-recipients" [] [])]
+    ]
    (form/input-button "save" "Guardar")
    (form/input-button "cancel" "Cancelar")])
 
@@ -47,18 +70,19 @@
   (layout/common "Notificaciones"
                  [:div {:class "clear"}]
                  (display-notifications notifications)))
-(defn- get-title
-  [action notification]
-  (get {:new "Nueva Notificacion"
-        :edit (:name notification)} action))
 
-(defn render-form
-  ([action]
-     (render-form action nil nil))
-  ([action notification]
-     (render-form action notification nil))
-  ([action notification errors]
-     (layout/common (get-title action notification)
-                    (notification-form action notification errors)
-                    [:div {:id "notification-id" :style "display:none"} (:id notification)]
-                    [:script {:type "text/javascript" :language "javascript"} "notify_blaster.notifications.main();"])))
+(defn- get-title
+  [notification]
+  (if notification
+    (:name notification)
+    "Nueva Notificacion"))
+
+(defn render-new
+  [policies contacts groups]
+  (layout/common (get-title nil)
+                    (notification-form nil policies contacts groups)
+                    [:div {:id "notification-id" :style "display:none"} ""]
+                    [:script {:type "text/javascript" :language "javascript"} "notify_blaster.notification.main();"]))
+
+(defn render-edit
+  [notification policies])

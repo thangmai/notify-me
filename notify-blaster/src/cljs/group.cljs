@@ -131,6 +131,6 @@
   (events/listen! (d/by-id "save")
                   :click
                   save-group)
-  (events/listen! (d/by-id "cancel")r
+  (events/listen! (d/by-id "cancel")
                   :click
                   cancel))

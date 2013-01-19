@@ -6,7 +6,7 @@
 
 (defjob Notifier
   [ctx]
-  (println "Does nothing"))
+  (println "This is not a comment..."))
 
 (defn job
   []
@@ -25,4 +25,4 @@
    (t/start-now)
    (t/with-schedule (schedule
                      (repeat-forever)
-                     (with-interval-in-seconds 5)))))
+                     (with-interval-in-seconds 30)))))
