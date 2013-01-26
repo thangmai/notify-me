@@ -102,7 +102,10 @@
               (varchar :notification 50 [:refer :notification :id])
               (integer :recipient_id)
               (varchar :recipient_type 20)
-              (varchar :last_status 20))))
+              (varchar :last_status 20)
+              (integer :attempts)
+              (integer :failed)
+              (integer :connected))))
   (down []
         (drop (table :notification_recipient))))
 

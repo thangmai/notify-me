@@ -25,6 +25,11 @@
   [conditions]
   (select e/contact (where conditions)))
 
+(defn delete!
+  [contact]
+  (delete e/contact
+          (where {:id (:id contact)})))
+
 (defn all
   []
   (select e/contact))

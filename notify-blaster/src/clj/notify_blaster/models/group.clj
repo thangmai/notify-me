@@ -17,8 +17,8 @@
                         (values {:contact_group_id (:id g)
                                  :contact_id (str->int (:id %))
                                  :office_id (:office_id g)}))
-             members)))
-       )))
+               members))
+         (assoc g :members members)))))
 
 (defn update!
   [conditions attributes]
@@ -37,8 +37,7 @@
                         (values {:contact_group_id (str->int (:id attributes))
                                  :contact_id (str->int (:id %))
                                  :office_id (:office_id attributes)}))
-             members)
-     )))
+             members))))
 
 (defn- get-members
   [group]
@@ -47,7 +46,6 @@
                 (and
                  (= :contact_group_member.contact_id :contact.id)
                  (= :contact_group_member.contact_group_id (:id group))))))
-
 
 (defn search
   [conditions]
@@ -59,6 +57,15 @@
                  (where conditions)
                  (limit 1)))]
     (assoc group :members (get-members group))))
+
+(defn delete!
+  [group]
+  (transaction
+   (delete e/contact_group_member
+           (where {:contact_group_id (:id group)
+                   :office_id (:office_id group)}))
+   (delete e/contact_group
+          (where {:id (:id group)}))))
 
 (defn all
   []

@@ -19,10 +19,7 @@
           (f/drop-down "type" [["Persona" "P"] ["Oficina" "O"]] (:type contact)))
          (form/field
           (f/label "cell_phone" "Telefono")
-          (form/text-field action "cell_phone" (:cell_phone contact)))
-         
-         )
-
+          (form/text-field action "cell_phone" (:cell_phone contact))))
    (form/input-button "save" "Guardar")
    (form/input-button "cancel" "Cancelar")])
 

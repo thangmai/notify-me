@@ -3,7 +3,8 @@
   :url "http://notifyblaster.com"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :plugins [[lein-cljsbuild "0.2.10"]]
+  :plugins [[lein-cljsbuild "0.2.10"]
+            [lein-midje "2.0.1"]]
   :dependencies [[org.clojure/clojure "1.4.0"]
                  ;;web server
                  [compojure "1.1.3"]
@@ -23,8 +24,11 @@
                  ;;authentication
                  [com.cemerick/friend "0.1.2"]
                  [crypto-random "1.1.0"]
+                 ;;asterisk
+                 [clj-asterisk "0.2.0"]
                  ;;quartz wrapper for jobs
-                 [clojurewerkz/quartzite "1.0.1"]]
+                 [clojurewerkz/quartzite "1.0.1"]
+                 [midje "1.4.0"]]
   :source-paths ["src/clj"]
   :hooks [leiningen.cljsbuild]
   :main notify-blaster.server

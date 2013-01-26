@@ -9,4 +9,3 @@
       (tower/with-locale :en
         (apply tower/t params)))))
 
-(tower/set)
