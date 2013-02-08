@@ -66,3 +66,14 @@
   (let [id (:id params)
         policy (merge params {:office_id (current-office-id)})]
     (validate-and-save policy (fn [] (model/update! {:id (str->int id)} (dissoc policy :id))))))
+
+
+(defroutes routes
+  (GET "/" [] (all))
+  (GET "/new" [] (show-new))
+  (POST "/" request (create! (read-string (slurp (:body request)))))
+  (GET "/:id" [id] (show id))
+  (GET "/:id/edit" [id] (edit id))
+  (GET "/:name/unique" [name] (pr-str (is-unique? name)))
+  (GET "/:id/:name/unique" [id name] (pr-str (is-unique? name id)))
+  (POST "/:id" request (update! (read-string (slurp (:body request))))))

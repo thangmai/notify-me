@@ -60,4 +60,5 @@
   ([action office errors]
      (layout/common "Nueva Oficina"
                     (office-form action office errors)
+                    [:div {:id "office-id" :style "display:none"} (:id office)]
                     [:script {:type "text/javascript" :language "javascript"} "notify_me.office.main();"])))

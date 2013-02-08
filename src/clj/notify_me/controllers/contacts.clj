@@ -55,7 +55,6 @@
                   (callback)
                   errors)))))
 
-
 (defn create!
   "Creates a new contact"
   [params]
@@ -64,7 +63,19 @@
 
 (defn update!
   "Updates an existing contact"
-  [id params]
-  (validate-and-save
-   params
-   (fn [] (model/update! {:id (str->int id)} (dissoc params :id)))))
+  [params]
+  (let [id (:id params)]
+    (validate-and-save
+     params
+     (fn [] (model/update! {:id (str->int id)} (dissoc params :id))))))
+
+
+(defroutes routes
+  (GET "/" [] (all))
+  (GET "/new" [] (show-new))
+  (POST "/" request (create! (read-string (slurp (:body request)))))
+  (GET "/:phone" [phone] (show phone))
+  (GET "/:phone/edit" [phone] (edit phone))
+  (GET "/:phone/unique" [phone] (pr-str (is-unique? phone)))
+  (GET "/:id/:phone/unique" [id phone] (pr-str (is-unique? phone id)))
+  (POST "/:id" request (update! (read-string (slurp (:body request))))))

@@ -14,28 +14,22 @@
    [domina.events :as events]
    [cljs.reader :as reader]))
 
-(def ^{:dynamic true} *fn-test* (fn [] "root"))
 
-(defmulti test-method :type)
-(defmethod test-method :something [x]
-  (*fn-test*))
+(defn get-office-id
+  []
+  (d/text (d/by-id "office-id")))
 
-(defn bug []
-  (binding [*fn-test* (fn [] "dynamic") ]
-    (.log js/console (test-method {:type :something}))))
+(defn is-new?
+  "Returns true if this is not an edition of an existent policy"
+  []
+  (let [id (get-office-id)]
+    (= (count id) 0)))
 
-
-(defn bug2 []
-  (binding [*fn-test* (fn [] "dynamic") ]
-    (map #(test-method {:type :something}) (range 10))))
-
-(defn is-unique2?
-  [office-name]
-  (when office-name
-    (let [x (jq-macros/let-ajax [response {:url (format "%s/unique" office-name)}]
-                                (reader/read-string response))]
-      (do
-        (.log js/console x) x))))
+(defn- prepare-office
+  [office]
+  (if (is-new?)
+    office
+    (assoc office :id (get-office-id))))
 
 (defn is-office-unique?
   [office-name office-id]
@@ -53,9 +47,10 @@
        (validate admin user-rules/rules {}
               (fn [errors]
                 (if (empty? errors)
-                  (f/submit-form "office-form")
+                  (f/post-form "office-form" (prepare-office admin))
                   (f/show-errors errors))))))
     (f/submit-form "office-form")))
+
 
 (defn- validate-and-save
   [office]
@@ -73,8 +68,7 @@
     (validate-and-save office-values)))
 
 (defn cancel
-  [event]
-  (.log js/console (is-unique? "presidencia")))
+  [event])
 
 (defn ^:export main
   []

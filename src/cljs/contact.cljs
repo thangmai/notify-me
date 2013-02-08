@@ -13,6 +13,23 @@
    [domina.events :as events]
    [cljs.reader :as reader]))
 
+
+(defn get-contact-id
+  []
+  (d/text (d/by-id "contact-id")))
+
+(defn is-new?
+  "Returns true if this is not an edition of an existent contact"
+  []
+  (let [id (get-contact-id)]
+    (= (count id) 0)))
+
+(defn- prepare-contact
+  [contact]
+  (if (is-new?)
+    contact
+    (assoc contact :id (get-contact-id))))
+
 (defn- is-phone-unique?
   "Deferred validator for the phone uniqueness"
   [phone contact-id]
@@ -30,7 +47,7 @@
     (validate contact rules/rules {}
               (fn [errors]
                 (if (empty? errors)
-                  (f/post-form "contact-form" contact)
+                  (f/post-form "contact-form" (prepare-contact contact))
                   (f/show-errors errors))))))
 
 (defn save-contact

@@ -68,10 +68,22 @@
 (defn update!
   "Updates an existing user, if passwords fields are posted password
   is changed, otherwise the fields are left as-is in the database"
-  [id params]
-  (let [password (or (:password params) "xxxxxx")
+  [params]
+  (let [id (:id params)
+        password (or (:password params) "xxxxxx")
         password-match (or (:password-match params) "xxxxxx")
         user (merge params {:password password :password-match password-match})]
     (validate-and-save
-     user (fn [] (let [u (if (:password params) user params)]
-                   (model/update! {:id (str->int id)} (dissoc u :id)))))))
+     user (fn []
+            (let [u (if (:password params) user params)]
+              (model/update! {:id (str->int id)} (dissoc u :id)))))))
+
+(defroutes routes
+  (GET "/" [] (all))
+  (GET "/new" [] (show-new))
+  (POST "/" request (create! (read-string (slurp (:body request)))))
+  (GET "/:username" [username] (show username))
+  (GET "/:username/edit" [username] (edit username))
+  (GET "/:name/unique" [name] (pr-str (is-unique? name)))
+  (GET "/:id/:name/unique" [id name] (pr-str (is-unique? name id)))
+  (POST "/:id" request (update! (read-string (slurp (:body request))))))

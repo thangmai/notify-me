@@ -46,3 +46,9 @@
                 (if (empty? errors)
                   (model/create! notification)
                   errors)))))
+
+(defroutes routes
+  (GET "/" [] (all))
+  (GET "/new" [] (show-new))
+  (POST "/" request (create! (read-string (slurp (:body request)))))
+  (GET "/:id" [id] (show id)))

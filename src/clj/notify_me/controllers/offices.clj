@@ -38,8 +38,8 @@
 
 (defn is-office-unique?
   ([office-name]
-     (is-office-unique? nil office-name))
-  ([office-id office-name]
+     (is-office-unique? office-name nil))
+  ([office-name office-id]
      (let [office (office-model/one {:name office-name})]
        (or (nil? office)
            (= (str (:id office)) office-id)))))
@@ -48,7 +48,7 @@
   [office user]
   (if user
     (let [user (merge user {:office_id (:id office)})]
-        (binding [*is-unique?* (fn [v] true)]
+        (binding [*is-unique?* (fn [n v] true)]
           (validate user user-rules/rules {}
                 (fn [errors]
                   (if (empty? errors)
@@ -59,9 +59,9 @@
 (defn- create-default-policy
   "Creates default policy dispatch rules for the office
    All values take the default ones defined on the database schema"
-  [office-id]
+  [office]
   (policy-model/create! {:name "default"
-                         :office_id office-id}))
+                         :office_id (:id office)}))
 
 (defn- validate-and-save
   [office user]
@@ -71,9 +71,9 @@
     (validate office office-rules/rules {}
               (fn [errors]
                 (if (empty? errors)
-                  (let [office-id (office-model/create! office)]
-                    (validate-and-save-user office-id user)
-                    (create-default-policy office-id))
+                  (let [office (office-model/create! office)]
+                    (validate-and-save-user office user)
+                    (create-default-policy office))
                   errors)))))
 
 (defn- append-user-defaults
@@ -93,6 +93,18 @@
 
 (defn update!
   "Updates an existing office"
-  [id params]
-  (office-model/update! {:id (str->int id)}
-                 params))
+  [params]
+  (let [id (:id params)
+        office (dissoc params :id)]
+    (office-model/update! {:id (str->int id)}
+                          office)))
+
+(defroutes routes
+  (GET "/" [] (all))
+  (GET "/new" [] (show-new))
+  (POST "/" request (create! (read-string (slurp (:body request)))))
+  (GET "/:id" [id] (show id))
+  (GET "/:id/edit" [id] (edit id))
+  (GET "/:name/unique" [name] (pr-str (is-office-unique? name)))
+  (GET "/:id/:name/unique" [id name] (pr-str (is-office-unique? id name)))
+  (POST "/:id" request (update! (read-string (slurp (:body request))))))

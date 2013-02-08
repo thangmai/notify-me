@@ -35,7 +35,7 @@
         promise (.ajax js/$ url (clj->js {:url url :type "POST" :data post-data :contentType "text"}))]
     (.then promise
            (fn [response, status, jqxhr]
-               (display-message "Saved successfully" "notice-msg"))
+               (display-message "Guardado con exito" "notice-msg"))
            (fn [e]
                (display-message "Ooops, there was an error, please try again later" "error-msg")))))
 

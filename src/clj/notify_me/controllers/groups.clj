@@ -82,3 +82,14 @@
   (let [id (:id params)
         group (merge params {:office_id (current-office-id)})]
     (validate-and-save group (fn [] (model/update! {:id (str->int id)} group)))))
+
+
+(defroutes routes
+  (GET "/" [] (all))
+  (GET "/new" [] (show-new))
+  (POST "/" request (create! (read-string (slurp (:body request)))))
+  (GET "/:name" [name] (show name))
+  (GET "/:name/edit" [name] (edit name))
+  (GET "/:name/unique" [name] (pr-str (is-unique? name)))
+  (GET "/:id/:name/unique" [id name] (pr-str (is-unique? name id)))
+  (POST "/:id" request (update! (read-string (slurp (:body request))))))

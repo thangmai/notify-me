@@ -10,3 +10,4 @@ pom.xml
 .lein-plugins
 crossover-cljs/
 .lein-cljsbuild-compiler-0/
+/db/
