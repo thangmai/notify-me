@@ -4,6 +4,7 @@
    [notify-me.models.policy :as policy]
    [notify-me.models.contact :as contact]
    [notify-me.models.group :as group]
+   [notify-me.models.trunk :as trunk]
    [notify-me.views.notifications :as view]
    [ring.util.response :as res]
    [cemerick.friend :as friend]
@@ -32,8 +33,17 @@
   []
   (let [qry {:office_id (current-office-id)}]
     (view/render-new (policy/search qry)
+                     (trunk/search qry)
                      (contact/search qry)
                      (group/search qry))))
+
+(defn validate-and-save
+  [notification callback]
+  (validate notification notification-rules/rules {}
+            (fn [errors]
+              (if (empty? errors)
+                (callback)
+                errors))))
 
 (defn create!
   "Creates a new notification"
@@ -41,14 +51,12 @@
   (let [notification (merge params {:office_id (current-office-id)
                                     :id (.toString (java.util.UUID/randomUUID))
                                     :status "CREATED"})]
-    (validate notification notification-rules/rules {}
-              (fn [errors]
-                (if (empty? errors)
-                  (model/create! notification)
-                  errors)))))
+    (validate-and-save notification (fn [] (model/create! notification)))))
 
 (defroutes routes
   (GET "/" [] (all))
   (GET "/new" [] (show-new))
-  (POST "/" request (create! (read-string (slurp (:body request)))))
+  ;;status field from the newly created notification gets confused
+  ;;with http status result and fails
+  (POST "/" request (dissoc (create! (read-string (slurp (:body request)))) :status)) 
   (GET "/:id" [id] (show id)))

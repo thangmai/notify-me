@@ -16,7 +16,7 @@
                  [org.clojure/java.jdbc "0.1.1"]
                  ;;client side, html/javascript
                  [org.clojure/clojurescript "0.0-1572"]
-                 [domina "1.0.0"]
+                 [domina "1.0.2-SNAPSHOT"]
                  [hiccup "1.0.2"]
                  [jayq "0.3.2"]
                  ;;translation

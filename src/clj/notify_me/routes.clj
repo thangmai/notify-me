@@ -10,6 +10,7 @@
    [notify-me.controllers.contacts :as contacts]
    [notify-me.controllers.groups :as groups]
    [notify-me.controllers.policies :as policies]
+   [notify-me.controllers.trunks :as trunks]
    [notify-me.controllers.notifications :as notifications]
    [notify-me.controllers.session :as session])
   (:use
@@ -34,6 +35,7 @@
   (context "/contacts" request (friend/wrap-authorize contacts/routes #{:user :admin}))
   (context "/groups" request (friend/wrap-authorize groups/routes #{:user :admin}))
   (context "/policies" request (friend/wrap-authorize policies/routes #{:user :admin}))
+  (context "/trunks" request (friend/wrap-authorize trunks/routes #{:user :admin}))
   (context "/notifications" request (friend/wrap-authorize notifications/routes #{:user :admin}))
   
   ;; auth

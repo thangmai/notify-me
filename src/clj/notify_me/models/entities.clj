@@ -35,7 +35,8 @@
   (prepare #(str->int % :retries_on_error :busy_interval_secs :no_answer_retries :no_answer_interval_secs)))
 
 (defentity trunk
-  (belongs-to office))
+  (belongs-to office)
+  (prepare #(str->int % :capacity)))
 
 (defentity sms_provider)
 
@@ -45,7 +46,7 @@
   (belongs-to trunk)
   (belongs-to sms_provider)
   (has-many notification-recipient)
-  (prepare #(str->int % :office_id :delivery_policy_id)))
+  (prepare #(str->int % :office_id :delivery_policy_id :trunk_id)))
 
 (defentity notification_recipient
   (belongs-to notification))

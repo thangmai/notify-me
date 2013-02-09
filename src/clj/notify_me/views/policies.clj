@@ -14,25 +14,18 @@
          (form/field
           (f/label "name" "Nombre")
           (form/text-field action "name" (:name policy)))
-        
          (form/field
           (f/label "no_answer_retries" "Reintentos si no atiende")
           (form/text-field action "no_answer_retries" (:no_answer_retries policy)))
-
          (form/field
           (f/label "retries_on_error" "Reintentos en caso de error")
           (form/text-field action "retries_on_error" (:retries_on_error policy)))
-
          (form/field
           (f/label "busy_interval_secs" "Intervalo en ocupado(segs)")
           (form/text-field action "busy_interval_secs" (:busy_interval_secs policy)))
-
          (form/field
           (f/label "no_answer_interval_secs" "Intervalo si no atiende(segs)")
-          (form/text-field action "no_answer_interval_secs" (:no_answer_interval_secs policy)))
-         
-         )
-
+          (form/text-field action "no_answer_interval_secs" (:no_answer_interval_secs policy))))
    (form/input-button "save" "Guardar")
    (form/input-button "cancel" "Cancelar")])
 

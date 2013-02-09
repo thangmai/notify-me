@@ -25,7 +25,7 @@
     ]])
 
 (defn notification-form
-  [notification policies contacts groups]
+  [notification policies trunks contacts groups]
   [:div {:id "notification-form"}
    [:p  {:id "form-message" :style "display:none"}]
    (form/form "/notifications/"
@@ -33,15 +33,17 @@
          (form/field
           (f/label "message" "Mensaje")
           (f/text-area "message"))
-         
-         (form/field
-          (f/label "sms" "Enviar SMS")
-          (f/check-box "sms"))
-         
-         (form/field
-          (f/label "call" "Llamar")
-          (f/check-box "call"))
 
+         (form/field
+          (f/label "type" "Tipo de contacto")
+          (f/drop-down "type" [["Llamada" "CALL"] ["SMS" "SMS"]] (:type notification)))
+          
+         (form/field
+          (f/label "trunk_id" "Troncal")
+          (f/drop-down "trunk_id"
+                       (vec (map (fn [p] [(:name p) (:id p)]) trunks))
+                       (:trunk_id notification)))
+         
          (form/field
           (f/label "delivery_policy_id" "Reglas de Despacho")
           (f/drop-down "delivery_policy_id"
@@ -78,9 +80,9 @@
     "Nueva Notificacion"))
 
 (defn render-new
-  [policies contacts groups]
+  [policies trunks contacts groups]
   (layout/common (get-title nil)
-                    (notification-form nil policies contacts groups)
+                    (notification-form nil policies trunks contacts groups)
                     [:div {:id "notification-id" :style "display:none"} ""]
                     [:script {:type "text/javascript" :language "javascript"} "notify_me.notification.main();"]))
 
