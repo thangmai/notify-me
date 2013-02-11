@@ -15,7 +15,7 @@
 (defn all
   "Renders a view with all the defined trunks"
   []
-  (view/index (model/all)))
+  (view/index (model/search {:office_id (current-office-id)})))
 
 (defn show
   "Renders a trunk form read-only"
@@ -66,7 +66,6 @@
   (let [id (:id params)
         trunk (merge params {:office_id (current-office-id)})]
     (validate-and-save trunk (fn [] (model/update! {:id (str->int id)} (dissoc trunk :id))))))
-
 
 (defroutes routes
   (GET "/" [] (all))

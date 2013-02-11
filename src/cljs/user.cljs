@@ -82,7 +82,7 @@
                   save-user)
   (events/listen! (d/by-id "cancel")
                   :click
-                  cancel)
+                  f/back)
   (events/listen! (d/by-id "password")
                   :keyup
                   on-password-changed)

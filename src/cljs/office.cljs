@@ -77,4 +77,4 @@
                   save-office)
   (events/listen! (d/by-id "cancel")
                   :click
-                  cancel))
+                  f/back))

@@ -27,20 +27,23 @@
           (f/label "password-match" "Reingrese la Clave")
           (f/password-field  "password-match"))
          )
-
    (form/input-button "save" "Guardar")
    (form/input-button "cancel" "Cancelar")])
 
-(defn display-users [users]
-  [:div {:id "shouts sixteen columns alpha omega"}
-   (map
-    (fn [user] [:h2 {:class "shout"} (h (:name user))])
-    users)])
+
+(defn display-users
+  [users]
+  (layout/create-entity-table "entity-table"
+                              [[:username "Usuario"]
+                               [:display_name "Nombre"]
+                               [:email "Email"]]
+                              users
+                              [["/users/%s/edit" "Editar"]
+                               ["/users/%s/delete" "Borrar"]]))
 
 (defn index [users]
-  (layout/common "Office"
-                 (user-form)
-                 [:div {:class "clear"}]
+  (layout/common "Usuarios"
+                 [:input {:type "button" :value "Nuevo Usuario" :onclick "window.location='/users/new';"}]
                  (display-users users)))
 
 (defn- get-title

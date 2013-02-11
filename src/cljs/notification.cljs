@@ -115,7 +115,7 @@
                   save-notification)
   (events/listen! (d/by-id "cancel")
                   :click
-                  cancel)
+                  f/back)
   (events/listen! (d/by-id "type")
                   :change
                   on-type-changed))

@@ -41,17 +41,27 @@
    (form/input-button "save" "Guardar")
    (form/input-button "cancel" "Cancelar")])
 
+(defn display-trunks
+  [trunks]
+  (layout/create-entity-table "entity-table"
+                              [[:host "Host"]
+                               [:name "Nombre"]
+                               [:technology "Tecnologia"]
+                               [:number "Numero"]
+                               [:extension "Extension"]
+                               [:priority "Prioridad"]
+                               [:callerid "Caller Id"]
+                               [:capacity "Capacidad"]]
+                              trunks
+                              [["/trunks/%s/edit" "Editar"]
+                               ["/trunks/%s/delete" "Borrar"]]))
 
-(defn display-trunks [trunks]
-  [:div {:id "shouts sixteen columns alpha omega"}
-   (map
-    (fn [trunk] [:h2 {:class "shout"} (h (:name trunk))])
-    trunks)])
-
-(defn index [trunks]
-  (layout/common "Politicas de Despacho"
-                 [:div {:class "clear"}]
+(defn index
+  [trunks]
+  (layout/common "Troncales"
+                 [:input {:type "button" :value "Nuevo Troncal" :onclick "window.location='/trunks/new';"}]                                                                    
                  (display-trunks trunks)))
+
 (defn- get-title
   [action trunk]
   (get {:new "Nuevo Troncal"

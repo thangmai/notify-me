@@ -23,17 +23,21 @@
    (form/input-button "save" "Guardar")
    (form/input-button "cancel" "Cancelar")])
 
-
-(defn display-contacts [contacts]
-  [:div {:id "shouts sixteen columns alpha omega"}
-   (map
-    (fn [contact] [:h2 {:class "shout"} (h (:name contact))])
-    contacts)])
+(defn display-contacts
+  [contacts]
+  (layout/create-entity-table "entity-table"
+                              [[:name "Nombre"]
+                               [:type "Tipo"]
+                               [:cell_phone "Celular"]]
+                              contacts
+                              [["/contacts/%s/edit" "Editar"]
+                               ["/contacts/%s/delete" "Borrar"]]))
 
 (defn index [contacts]
   (layout/common "Contactos"
-                 [:div {:class "clear"}]
+                 [:input {:type "button" :value "Nuevo Contacto" :onclick "window.location='/contacts/new';"}]
                  (display-contacts contacts)))
+
 (defn- get-title
   [action contact]
   (get {:new "Nuevo Contacto"

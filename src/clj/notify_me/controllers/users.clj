@@ -16,7 +16,7 @@
 (defn all
   "Renders a view with all the defined users"
   []
-  (view/index (model/all)))
+  (view/index (model/search {:office_id (current-office-id)})))
 
 (defn show
   "Renders a user form read-only"

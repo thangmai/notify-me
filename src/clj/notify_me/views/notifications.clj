@@ -62,16 +62,22 @@
    (form/input-button "cancel" "Cancelar")])
 
 
-(defn display-notifications [notifications]
-  [:div {:id "shouts sixteen columns alpha omega"}
-   (map
-    (fn [n] [:h2 {:class "shout"} (h (:name n))])
-    notifications)])
+(defn display-notifications
+  [notifications]
+  (layout/create-entity-table "entity-table"
+                              [[:status "Estado"]
+                               [:created "Iniciada"]
+                               [:type "Tipo"]
+                               [:message "Mensaje"]]
+                              notifications
+                              []))
 
-(defn index [notifications]
+(defn index
+  [notifications]
   (layout/common "Notificaciones"
-                 [:div {:class "clear"}]
+                 [:input {:type "button" :value "Nueva Notificacion" :onclick "window.location='/notifications/new';"}]
                  (display-notifications notifications)))
+
 
 (defn- get-title
   [notification]
@@ -82,9 +88,9 @@
 (defn render-new
   [policies trunks contacts groups]
   (layout/common (get-title nil)
-                    (notification-form nil policies trunks contacts groups)
-                    [:div {:id "notification-id" :style "display:none"} ""]
-                    [:script {:type "text/javascript" :language "javascript"} "notify_me.notification.main();"]))
+                 (notification-form nil policies trunks contacts groups)
+                 [:div {:id "notification-id" :style "display:none"} ""]
+                 [:script {:type "text/javascript" :language "javascript"} "notify_me.notification.main();"]))
 
 (defn render-edit
   [notification policies])

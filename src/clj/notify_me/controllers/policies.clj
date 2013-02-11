@@ -15,7 +15,7 @@
 (defn all
   "Renders a view with all the defined policies"
   []
-  (view/index (model/all)))
+  (view/index (model/search {:office_id (current-office-id)})))
 
 (defn show
   "Renders a p form read-only"

@@ -40,16 +40,17 @@
    (form/input-button "save" "Guardar")
    (form/input-button "cancel" "Cancelar")])
 
-(defn display-offices [offices]
-  [:div {:id "shouts sixteen columns alpha omega"}
-   (map
-    (fn [office] [:h2 {:class "shout"} (h (:name office))])
-    offices)])
+(defn display-offices
+  [offices]
+  (layout/create-entity-table "entity-table"
+                              [[:name "Nombre"] [:description "Descripcion"]]
+                              offices
+                              [["/offices/%s/edit" "Editar"]
+                               ["/offices/%s/delete" "Borrar"]]))
 
 (defn index [offices]
-  (layout/common "Office"
-                 (office-form)
-                 [:div {:class "clear"}]
+  (layout/common "Oficinas"
+                 [:input {:type "button" :value "Nueva Oficina" :onclick "window.location='/offices/new';"}]                                                   
                  (display-offices offices)))
 
 (defn render-form

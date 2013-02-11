@@ -8,7 +8,7 @@
    [cemerick.friend.workflows :as workflows]
    [notify-me.models.validation.group :as group-rules])
   (:use
-   [notify-me.models.permissions]
+   [notify-me.models.permissions]per
    [compojure.core :only [defroutes GET POST]]
    [notify-me.models.validation.core :only [validate *is-unique?*]]
    [notify-me.utils]))
@@ -30,7 +30,7 @@
 (defn all
   "Renders a view with all the defined contacts"
   []
-  (view/index (model/all)))
+  (view/index (model/search {:office_id (current-office-id)})))
 
 (defn show
   "Renders a contact form read-only"

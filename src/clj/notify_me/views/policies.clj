@@ -29,17 +29,26 @@
    (form/input-button "save" "Guardar")
    (form/input-button "cancel" "Cancelar")])
 
+(defn display-policies
+  [policies]
+  (layout/create-entity-table "entity-table"
+                              [[:name "Nombre"]
+                               [:retries_on_error "Reint. Error"]
+                               [:retries_on_busy "Reint. Ocupado"]
+                               [:busy_interval_secs "Intervalo Ocupado"]
+                               [:no_answer_retries "Reint. No Atiende"]
+                               [:no_answer_interval_secs "Intervalo No Atiende"]]
+                              policies
+                              [["/policies/%s/edit" "Editar"]
+                               ["/policies/%s/delete" "Borrar"]]))
 
-(defn display-policies [policies]
-  [:div {:id "shouts sixteen columns alpha omega"}
-   (map
-    (fn [policy] [:h2 {:class "shout"} (h (:name policy))])
-    policies)])
-
-(defn index [policies]
+(defn index
+  [policies]
   (layout/common "Politicas de Despacho"
-                 [:div {:class "clear"}]
+                 [:input {:type "button" :value "Nueva Politica" :onclick "window.location='/policies/new';"}]                                  
                  (display-policies policies)))
+
+
 (defn- get-title
   [action policy]
   (get {:new "Nuevas Politicas de Despacho"

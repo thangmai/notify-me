@@ -9,6 +9,9 @@
 (defn current-username []
   (:username (friend/current-authentication)))
 
+(defn current-displayname []
+  (:display_name (friend/current-authentication)))
+
 (defn current-user-id []
   (:id (friend/current-authentication)))
 
@@ -34,3 +37,13 @@
   `(if (not ~check)
      (ring.util.response/redirect "/")
      (do ~@body)))
+
+(def actions-by-role
+  (array-map :admin #{:offices}
+             :user #{:users :trunks :policies :notifications :contacts :groups}))
+
+(defn get-user-actions
+  []
+  (let [user (friend/current-authentication)
+        roles (:roles user)]
+    (reduce #(clojure.set/union %1 (get actions-by-role %2)) #{} roles)))

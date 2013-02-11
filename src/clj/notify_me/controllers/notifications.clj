@@ -20,7 +20,7 @@
 (defn all
   "Renders a view with all the defined notifications"
   []
-  (view/index (model/all)))
+  (view/index (model/search {:office_id (current-office-id)})))
 
 (defn show
   "Renders a notification form read-only"

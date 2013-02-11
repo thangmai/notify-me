@@ -69,3 +69,7 @@
         error-list (str "<ul>" (clojure.string/join (map (fn [m] (str "<li>" m "</li>")) messages)) "</ul>")]
     (do
       (display-message error-list "error-msg"))))
+
+(defn back
+  []
+  (.back js/history))

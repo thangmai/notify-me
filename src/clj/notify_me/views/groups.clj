@@ -47,16 +47,22 @@
    (form/input-button "cancel" "Cancelar")])
 
 
-(defn display-groups [groups]
-  [:div {:id "shouts sixteen columns alpha omega"}
-   (map
-    (fn [group] [:h2 {:class "shout"} (h (:name group))])
-    groups)])
+(defn display-groups
+  [groups]
+  (layout/create-entity-table "entity-table"
+                              [[:name "Nombre"]
+                               [:description "Descripcion"]
+                               [:type "Tipo"]]
+                              groups
+                              [["/groups/%s/edit" "Editar"]
+                               ["/groups/%s/delete" "Borrar"]]))
 
-(defn index [groups]
+(defn index
+  [groups]
   (layout/common "Grupos"
-                 [:div {:class "clear"}]
+                 [:input {:type "button" :value "Nuevo Grupo" :onclick "window.location='/groups/new';"}]                 
                  (display-groups groups)))
+
 (defn- get-title
   [action group]
   (get {:new "Nuevo Grupo"
