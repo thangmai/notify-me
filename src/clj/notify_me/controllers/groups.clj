@@ -8,7 +8,7 @@
    [cemerick.friend.workflows :as workflows]
    [notify-me.models.validation.group :as group-rules])
   (:use
-   [notify-me.models.permissions]per
+   [notify-me.models.permissions]
    [compojure.core :only [defroutes GET POST]]
    [notify-me.models.validation.core :only [validate *is-unique?*]]
    [notify-me.utils]))

@@ -1,6 +1,6 @@
 (ns notify-me.views.notifications
   (:use [hiccup.core :only [html h]]
-        [hiccup.page :only [doctype]]
+        [hiccup.page :only [doctype include-css include-js]]
         [hiccup.def :only [defelem]])
   (:require [notify-me.views.layout :as layout]
             [hiccup.form :as f]
@@ -21,35 +21,30 @@
    [:tbody
     (concat
      (map #(recipient-row % "C") contacts)
-     (map #(recipient-row % "G") groups))
-    ]])
+     (map #(recipient-row % "G") groups))]])
 
 (defn notification-form
   [notification policies trunks contacts groups]
   [:div {:id "notification-form"}
    [:p  {:id "form-message" :style "display:none"}]
    (form/form "/notifications/"
-              
          (form/field
           (f/label "message" "Mensaje")
           (f/text-area "message"))
-
+         [:tr [:td] [:td [:div {:class "ui360"} [:a {:href "#" :id "play-tts"} "Escuchar"]]]]
          (form/field
           (f/label "type" "Tipo de contacto")
           (f/drop-down "type" [["Llamada" "CALL"] ["SMS" "SMS"]] (:type notification)))
-          
          (form/field
           (f/label "trunk_id" "Troncal")
           (f/drop-down "trunk_id"
                        (vec (map (fn [p] [(:name p) (:id p)]) trunks))
                        (:trunk_id notification)))
-         
          (form/field
           (f/label "delivery_policy_id" "Reglas de Despacho")
           (f/drop-down "delivery_policy_id"
                        (vec (map (fn [p] [(:name p) (:id p)]) policies))
                        (:delivery_policy_id notification))))
-   
    [:div {:id "contacts"}
     [:div {:class "contact-table"}
      [:h4 "Contactos Disponibles"]
@@ -90,7 +85,11 @@
   (layout/common (get-title nil)
                  (notification-form nil policies trunks contacts groups)
                  [:div {:id "notification-id" :style "display:none"} ""]
-                 [:script {:type "text/javascript" :language "javascript"} "notify_me.notification.main();"]))
+                 (include-css "/css/360player.css")
+                 [:script {:type "text/javascript" :language "javascript"} "notify_me.notification.main();"]
+                 (include-js "/scripts/soundmanager2-nodebug-jsmin.js")
+                 (include-js "/scripts/berniecode-animator.js")
+                 (include-js "/scripts/360player.js")))
 
 (defn render-edit
   [notification policies])

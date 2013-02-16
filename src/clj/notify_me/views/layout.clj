@@ -12,25 +12,29 @@
     [:div {:class "logged-user"} (permissions/current-displayname)] [:a {:href "/logout"} "Logout"]]])
 
 (defn- footer
-  [])
+  []
+  [:div {:class "grid_12"} "Copygright blablabla"])
 
 (def menu-actions
-  {:offices ["Oficinas" "/offices"]
-   :users ["Usuarios" "/users"]
-   :contacts ["Contactos" "/contacts"]
-   :groups ["Grupos" "/groups"]
-   :policies ["Reglas" "/policies"]
-   :trunks ["Troncales" "/trunks"]
-   :notifications ["Notificaciones" "/notifications"]})
+  (array-map :offices ["Oficinas" "/offices"]
+             :users ["Usuarios" "/users"]
+             :contacts ["Contactos" "/contacts"]
+             :groups ["Grupos" "/groups"]
+             :policies ["Reglas" "/policies"]
+             :trunks ["Troncales" "/trunks"]
+             :notifications ["Notificaciones" "/notifications"]))
 
 (defn- menu-entries
   "Build the menu entries markup from a list of action keywords"
   [actions selected]
   (reduce
-   (fn [l a] (let [entry (get menu-actions a)
-                   style (if (= a selected) "selected" "")]
-               (conj l [:li {:class style} [:a {:href (entry 1)} (entry 0)]])))
-   [] actions))
+   (fn [l entry]
+     (if (contains? actions (entry 0))
+       (let [menu-data (entry 1)
+             style (if (= (entry 0) selected) "selected" "")]
+         (conj l [:li {:class style} [:a {:href (menu-data 1)} (menu-data 0)]]))
+       l))
+   [] menu-actions))
 
 (defn- menu
   "Creates the navigation menu markup"
@@ -69,7 +73,9 @@
     [:div {:class "row"}
      [:div {:class "grid_2"} (menu :users)]
      [:div {:class "grid_10"}
-      [:div {:id "content" :class "container"} content]]]]))
+      [:div {:id "content" :class "container"} content]]]
+    [:div {:class "row"}
+     (footer)]]))
 
 (defn four-oh-four []
   "Page not found")

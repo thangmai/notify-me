@@ -12,6 +12,7 @@
    [notify-me.controllers.policies :as policies]
    [notify-me.controllers.trunks :as trunks]
    [notify-me.controllers.notifications :as notifications]
+   [notify-me.controllers.tts :as tts]
    [notify-me.controllers.session :as session])
   (:use
      ring.middleware.params
@@ -26,8 +27,7 @@
   ;;files
   (route/resources "/")
   ;;landing
-  (GET "/" request
-       (response/resource-response "public/index.html"))
+  (GET "/" request (response/redirect "/notifications"))
   
   ;;controllers
   (context "/offices" request (friend/wrap-authorize offices/routes #{:admin}))
@@ -37,6 +37,7 @@
   (context "/policies" request (friend/wrap-authorize policies/routes #{:user :admin}))
   (context "/trunks" request (friend/wrap-authorize trunks/routes #{:user :admin}))
   (context "/notifications" request (friend/wrap-authorize notifications/routes #{:user :admin}))
+  (context "/tts" request (friend/wrap-authorize tts/routes #{:user :admin}))
   
   ;; auth
   (GET "/login" request session/show-new)

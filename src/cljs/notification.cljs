@@ -104,6 +104,15 @@
       "CALL" (d/set-styles! trunk-row {:display "table-row"})
       "SMS" (d/set-styles! trunk-row {:display "none"}))))
 
+(defn tts-url
+  []
+  (let [message (d/value (d/by-id "message"))]
+    (format "/tts/%s/translate" message)))
+
+(defn play-tts
+  [event]
+  (d/set-attr! (d/by-id "play-tts") "a" (tts-url)))
+
 (defn ^:export main
   []
   (.dataTable (js/$ "#available-recipients"))
@@ -118,4 +127,7 @@
                   f/back)
   (events/listen! (d/by-id "type")
                   :change
-                  on-type-changed))
+                  on-type-changed)
+  (events/listen! (d/by-id "play-tts")
+                  :click
+                  play-tts))
