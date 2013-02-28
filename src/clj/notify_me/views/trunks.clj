@@ -59,7 +59,7 @@
 (defn index
   [trunks]
   (layout/common "Troncales"
-                 [:input {:type "button" :value "Nuevo Troncal" :onclick "window.location='/trunks/new';"}]                                                                    
+                 (layout/button-new "Nuevo Troncal" "/trunks/new")
                  (display-trunks trunks)))
 
 (defn- get-title

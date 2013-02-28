@@ -50,7 +50,7 @@
 
 (defn index [offices]
   (layout/common "Oficinas"
-                 [:input {:type "button" :value "Nueva Oficina" :onclick "window.location='/offices/new';"}]                                                   
+                 (layout/button-new "Nueva Oficina" "/offices/new")
                  (display-offices offices)))
 
 (defn render-form

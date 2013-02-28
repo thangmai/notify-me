@@ -27,9 +27,55 @@
           (set-fields attributes)
           (where conditions)))
 
+
 (defn- get-recipients
+  "Retrieves the complete list of recipients for the given notification.
+   Joins against contact and contact_group tables in order to retrieve the corresponding name
+   for each recipient so this function is not suitable for correct pagination. FIX this"
+  [notification]
+  (concat
+   (select e/notification_recipient
+           (fields :recipient_id :contact_group.name :recipient_type :last_status :attempts :failed :connected)
+           (join e/contact_group (= :contact_group.id :notification_recipient.recipient_id))
+           (where {:notification (:id notification)
+                   :recipient_type "G"}))
+   (select e/notification_recipient
+           (fields :recipient_id :contact.name :recipient_type :last_status :attempts :failed :connected)           
+           (join e/contact (= :contact.id :notification_recipient.recipient_id))
+           (where {:notification (:id notification)
+                   :recipient_type "C"}))))
+
+(defn attempts
+  "Retrieves the complete list of attempts for a specific notification
+   This function is not pagination friendly either FIX(this should be done first querying a page and
+   joining after that)"
+  [notification]
+  (concat
+   (select e/message_delivery
+           (fields :recipient_id :contact_group.name :recipient_type :status :delivery_date :delivery_address :cause)
+           (join e/contact_group (= :contact_group.id :message_delivery.recipient_id))
+           (where {:notification (:id notification)
+                   :recipient_type "G"}))
+   (select e/message_delivery
+           (fields :recipient_id :contact.name :recipient_type :status :delivery_date :delivery_address :cause)           
+           (join e/contact (= :contact.id :message_delivery.recipient_id))
+           (where {:notification (:id notification)
+                   :recipient_type "C"}))))
+
+(defn attempts-summary
+  [notification]
+   (select e/message_delivery
+          (fields :status)
+          (aggregate (count :*) :cnt :status)
+          (group :status)
+          (where {:notification (:id notification)})))
+
+(defn recipients-summary
   [notification]
   (select e/notification_recipient
+          (fields :last_status)
+          (aggregate (count :*) :cnt :last_status)
+          (group :last_status)
           (where {:notification (:id notification)})))
 
 (defn one

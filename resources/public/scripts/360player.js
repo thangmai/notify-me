@@ -21,7 +21,7 @@
 soundManager.setup({
   // path to directory containing SM2 SWF
     url: '/scripts/',
-    debugMode: true,
+    debugMode: false,
     consoleOnly: true,
     useConsole: true
 });
@@ -1377,7 +1377,7 @@ if(navigator.userAgent.match(/webkit/i) && navigator.userAgent.match(/mobile/i))
 
 soundManager.setup({
   html5PollingInterval: 50, // increased framerate for whileplaying() etc.
-  debugMode: true, // disable or enable debug output
+  debugMode: false, // disable or enable debug output
   consoleOnly: true,
   flashVersion: 9,
   useHighPerformance: true,

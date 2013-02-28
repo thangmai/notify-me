@@ -45,7 +45,7 @@
 (defn index
   [policies]
   (layout/common "Politicas de Despacho"
-                 [:input {:type "button" :value "Nueva Politica" :onclick "window.location='/policies/new';"}]                                  
+                 (layout/button-new "Nueva Politica" "/policies/new")
                  (display-policies policies)))
 
 

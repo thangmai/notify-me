@@ -11,7 +11,7 @@
   [:div {:id "user-form"}
    [:p  {:id "form-message" :style "display:none"}]
    (form/form (str "/users/" (:id user))
-         (form/field
+         (form/fie
           (f/label "username" "Usuario")
           (form/text-field action "username" (:username user)))
          (form/field
@@ -43,7 +43,7 @@
 
 (defn index [users]
   (layout/common "Usuarios"
-                 [:input {:type "button" :value "Nuevo Usuario" :onclick "window.location='/users/new';"}]
+                 (layout/button-new "Nuevo Usuario" "/users/new")
                  (display-users users)))
 
 (defn- get-title

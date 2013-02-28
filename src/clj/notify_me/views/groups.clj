@@ -60,7 +60,7 @@
 (defn index
   [groups]
   (layout/common "Grupos"
-                 [:input {:type "button" :value "Nuevo Grupo" :onclick "window.location='/groups/new';"}]                 
+                 (layout/button-new "Nuevo Grupo" "/groups/new")
                  (display-groups groups)))
 
 (defn- get-title

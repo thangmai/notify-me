@@ -35,7 +35,7 @@
 
 (defn index [contacts]
   (layout/common "Contactos"
-                 [:input {:type "button" :value "Nuevo Contacto" :onclick "window.location='/contacts/new';"}]
+                 (layout/button-new "Nuevo Contacto" "/contacts/new")
                  (display-contacts contacts)))
 
 (defn- get-title

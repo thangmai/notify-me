@@ -56,6 +56,11 @@
    (form/input-button "save" "Guardar")
    (form/input-button "cancel" "Cancelar")])
 
+(defn- get-title
+  [notification]
+  (if notification
+    (:name notification)
+    "Nueva Notificacion")) 
 
 (defn display-notifications
   [notifications]
@@ -65,20 +70,66 @@
                                [:type "Tipo"]
                                [:message "Mensaje"]]
                               notifications
-                              []))
+                              [["/notifications/%s/view" "Ver"]
+                               ["/notifications/%s/cancel" "Cancelar"]]))
 
 (defn index
   [notifications]
   (layout/common "Notificaciones"
-                 [:input {:type "button" :value "Nueva Notificacion" :onclick "window.location='/notifications/new';"}]
+                 (layout/button-new "Nueva Notificacion" "/notifications/new")
                  (display-notifications notifications)))
 
+(defn- recipient-table
+  [recipients]
+  [:table {:id "recipients"}
+   [:thead [:tr [:th "Nombre"] [:th "Tipo"] [:th "Estado"] [:th "Intentos"] [:th "Fallas"] [:th "Conexiones"]]]
+   [:tbody
+    (map (fn [r]
+          [:tr
+           [:td (:name r)]
+           [:td (:recipient_type r)]
+           [:td (:last_status r)]
+           [:td (:attempts r)]
+           [:td (:failed r)]
+           [:td (:connected r)]])
+         recipients)]])
 
-(defn- get-title
-  [notification]
-  (if notification
-    (:name notification)
-    "Nueva Notificacion"))
+(defn- attempts-table
+  [attempts]
+  [:table {:id "attempts"}
+   [:thead [:tr [:th "Nombre"] [:th "Tipo"] [:th "Estado"] [:th "Fecha"] [:th "Direccion"] [:th "Causa"]]]
+   [:tbody
+    (map (fn [a]
+           [:tr
+           [:td (:name a)]
+           [:td (:recipient_type a)]
+           [:td (:status a)]
+           [:td (:delivery_date a)]
+           [:td (:delivery_address a)]
+           [:td (:cause a)]])
+         attempts)]])
+
+(defn render-dashboard
+  [notification attempts]
+  (layout/common (:message notification)
+                 (include-css "/css/dashboard.css")
+                 (get-title notification)
+                 [:div {:id "charts"}
+                  [:div {:id "recipients_chart"}
+                   [:div "Summary recipientes"]
+                   [:img {:src (format "/notifications/%s/rcpt-chart" (:id notification))}]]
+                  [:div {:id "attempts_chart"}
+                   [:div "Summar intentos totales"]
+                   [:img {:src (format "/notifications/%s/attempts-chart" (:id notification))}]]]
+                 [:div {:id "details"}
+                  [:div {:id "recipients_detail"}
+                   [:div "Recipientes"]
+                   (recipient-table (:members notification))]
+                  [:div {:id "attempts_detail"}
+                   [:div "Intentos totales"]
+                   (attempts-table attempts)]]
+                 [:script {:type "text/javascript" :language "javascript"}
+                  "$('#attempts').dataTable();$('#recipients').dataTable();"]))
 
 (defn render-new
   [policies trunks contacts groups]

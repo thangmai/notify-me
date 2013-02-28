@@ -28,6 +28,9 @@
                  [clj-asterisk "0.2.0"]
                  ;;quartz wrapper for jobs
                  [clojurewerkz/quartzite "1.0.1"]
+                 ;;charts
+                 [incanter "1.5.0-SNAPSHOT"]
+                 ;;testing
                  [midje "1.4.0"]]
   :source-paths ["src/clj"]
   :hooks [leiningen.cljsbuild]
