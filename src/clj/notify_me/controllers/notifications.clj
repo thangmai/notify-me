@@ -17,6 +17,8 @@
    [notify-me.models.validation.core :only [validate *is-unique?*]]
    [notify-me.utils])
   (:import java.util.UUID
+           java.awt.Color
+           org.jfree.chart.labels.StandardPieSectionLabelGenerator
            (java.io ByteArrayOutputStream
                     ByteArrayInputStream)))
 
@@ -59,8 +61,7 @@
 (defn- show-detail
   [id]
   (if-let [notification (model/one {:id id})]
-    (let [attempts (model/attempts notification)
-          _ (println attempts)]
+    (let [attempts (model/attempts notification)]
       (view/render-dashboard notification attempts))
     {:status 404 :body "not found"}))
 
@@ -74,33 +75,37 @@
     (-> (res/response in-stream)
         (res/content-type "image/png"))))
 
+;;nice colors taken from
+;;http://stackoverflow.com/questions/1088370/colours-to-piechart-in-jfreechart
+(def pie-colors {"CONNECTED" (Color. 169 204 143)
+                 "FINISHED" (Color. 181 181 169)
+                 "PROCESSING" (Color. 119 157 191)
+                 "BUSY" (Color. 255 248 163)
+                 "NO ANSWER" (Color. 119 157 191)
+                 "FAILED" (Color. 179 0 35)
+                 "CANCELLED" (Color. 181 181 169)})
+
+(defmacro create-chart
+  [id fn-data key-field value-field]
+  `(if-let [notification# (model/one {:id ~id})]
+     (let [data# (~fn-data notification#)
+           keys# (map ~key-field data#)
+           values# (map ~value-field data#)
+           chart# (incanter.charts/pie-chart keys#
+                                             values#
+                                             :legend true)
+           label-generator# (StandardPieSectionLabelGenerator. "{1} {0}({2})")]
+       (.. chart# getPlot (setLabelGenerator label-generator#))
+       (doall (map #(.. chart# getPlot (setSectionPaint (% 0) (% 1))) pie-colors))
+       (write-chart chart#))))
+
 (defn- recipients-chart
   [id]
-  (let [chart (incanter.charts/pie-chart ["a" "b" "c"]
-                                         [10 20 30])]
-    (write-chart chart)))
-
-(defn multi-series-chart
-  "Creates a xy-chart with multiple series extracted from column data
-  as specified by series parameter"
-  [{:keys [series title x-label y-label data]}]
-  (let [chart (incanter.charts/time-series-plot :Date (first series)
-                                                 :x-label x-label
-                                                 :y-label y-label
-                                                 :title title
-                                                 :series-label (first series)
-                                                 :legend true
-                                                 :data data)]
-    (reduce #(incanter.charts/add-lines %1 :Date %2 :series-label %2 :data data) chart (rest series))))
+  (create-chart id model/recipients-summary :last_status :cnt))
 
 (defn- attempts-chart
   [id]
-  (comment (let [chart (multi-series-chart {:series symbols
-                                   :x-label "Date"
-                                   :y-label "Return"
-                                   :title "Accumulated Daily Returns"
-                                   :data (acc-daily-rets adj-close-data)})]))
-  (recipients-chart "1"))
+  (create-chart id model/attempts-summary :status :cnt))
 
 (defn- cancel-notification
   [id])
