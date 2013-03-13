@@ -49,7 +49,8 @@
                                ["/offices/%s/delete" "Borrar"]]))
 
 (defn index [offices]
-  (layout/common "Oficinas"
+  (layout/common :offices
+                 "Oficinas"
                  (layout/button-new "Nueva Oficina" "/offices/new")
                  (display-offices offices)))
 
@@ -59,7 +60,8 @@
   ([action office]
      (render-form action office nil))
   ([action office errors]
-     (layout/common "Nueva Oficina"
+     (layout/common :offices
+                    "Nueva Oficina"
                     (office-form action office errors)
                     [:div {:id "office-id" :style "display:none"} (:id office)]
                     [:script {:type "text/javascript" :language "javascript"} "notify_me.office.main();"])))

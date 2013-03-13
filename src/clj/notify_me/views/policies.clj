@@ -44,7 +44,8 @@
 
 (defn index
   [policies]
-  (layout/common "Politicas de Despacho"
+  (layout/common :policies
+                 "Politicas de Despacho"
                  (layout/button-new "Nueva Politica" "/policies/new")
                  (display-policies policies)))
 
@@ -60,7 +61,8 @@
   ([action policy]
      (render-form action policy nil))
   ([action policy errors]
-     (layout/common (get-title action policy)
+     (layout/common :policies
+                    (get-title action policy)
                     (policy-form action policy errors)
                     [:div {:id "policy-id" :style "display:none"} (:id policy)]
                     [:script {:type "text/javascript" :language "javascript"} "notify_me.policies.main();"])))

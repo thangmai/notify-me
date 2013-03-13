@@ -59,7 +59,8 @@
 
 (defn index
   [groups]
-  (layout/common "Grupos"
+  (layout/common :groups
+                 "Grupos"
                  (layout/button-new "Nuevo Grupo" "/groups/new")
                  (display-groups groups)))
 
@@ -72,7 +73,8 @@
   ([action group users]
      (render-form action group users nil))
   ([action group available-users errors]
-     (layout/common (get-title action group)
+     (layout/common :groups
+                    (get-title action group)
                     (group-form action group available-users errors)
                     [:div {:id "group-id" :style "display:none"} (:id group)]
                     [:script {:type "text/javascript" :language "javascript"} "notify_me.group.main();"])))

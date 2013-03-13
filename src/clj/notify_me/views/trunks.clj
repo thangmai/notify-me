@@ -58,7 +58,8 @@
 
 (defn index
   [trunks]
-  (layout/common "Troncales"
+  (layout/common :trunks
+                 "Troncales"
                  (layout/button-new "Nuevo Troncal" "/trunks/new")
                  (display-trunks trunks)))
 
@@ -73,7 +74,8 @@
   ([action trunk]
      (render-form action trunk nil))
   ([action trunk errors]
-     (layout/common (get-title action trunk)
+     (layout/common :trunks
+                    (get-title action trunk)
                     (trunk-form action trunk errors)
                     [:div {:id "trunk-id" :style "display:none"} (:id trunk)]
                     [:script {:type "text/javascript" :language "javascript"} "notify_me.trunk.main();"])))

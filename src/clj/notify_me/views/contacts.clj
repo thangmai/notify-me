@@ -23,18 +23,28 @@
    (form/input-button "save" "Guardar")
    (form/input-button "cancel" "Cancelar")])
 
+
+(def contact-icons
+  {"O" "/images/house.png"
+   "P" "/images/man-figure.png"})
+
+(defn- get-type-image
+  [contact]
+  [:img {:src (get contact-icons (:type contact))}])
+
 (defn display-contacts
   [contacts]
   (layout/create-entity-table "entity-table"
                               [[:name "Nombre"]
-                               [:type "Tipo"]
+                               [:type "Tipo" get-type-image]
                                [:cell_phone "Celular"]]
                               contacts
                               [["/contacts/%s/edit" "Editar"]
                                ["/contacts/%s/delete" "Borrar"]]))
 
 (defn index [contacts]
-  (layout/common "Contactos"
+  (layout/common :contacts
+                 "Contactos"
                  (layout/button-new "Nuevo Contacto" "/contacts/new")
                  (display-contacts contacts)))
 
@@ -49,7 +59,8 @@
   ([action contact]
      (render-form action contact nil))
   ([action contact errors]
-     (layout/common (get-title action contact)
+     (layout/common :contacts
+                    (get-title action contact)
                     (contact-form action contact errors)
                     [:div {:id "contact-id" :style "display:none"} (:id contact)]
                     [:script {:type "text/javascript" :language "javascript"} "notify_me.contact.main();"])))

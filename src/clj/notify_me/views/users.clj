@@ -11,7 +11,7 @@
   [:div {:id "user-form"}
    [:p  {:id "form-message" :style "display:none"}]
    (form/form (str "/users/" (:id user))
-         (form/fie
+         (form/field
           (f/label "username" "Usuario")
           (form/text-field action "username" (:username user)))
          (form/field
@@ -42,7 +42,8 @@
                                ["/users/%s/delete" "Borrar"]]))
 
 (defn index [users]
-  (layout/common "Usuarios"
+  (layout/common :users
+                 "Usuarios"
                  (layout/button-new "Nuevo Usuario" "/users/new")
                  (display-users users)))
 
@@ -57,7 +58,8 @@
   ([action user]
      (render-form action user nil))
   ([action user errors]
-     (layout/common (get-title action user)
+     (layout/common :users
+                    (get-title action user)
                     (user-form action user errors)
                     [:div {:id "user-id" :style "display:none"} (:id user)]
                     [:script {:type "text/javascript" :language "javascript"} "notify_me.user.main();"])))

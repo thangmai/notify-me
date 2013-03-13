@@ -7,6 +7,10 @@
             [notify-me.views.forms :as form]))
 
 
+(def recipient-icons
+  {"C" "/images/man-figure.png"
+   "G" "/images/elevator.png"})
+
 (defmacro recipient-row
   [recipient type]
   `[:tr
@@ -62,12 +66,21 @@
     (:name notification)
     "Nueva Notificacion")) 
 
+
+(def notification-icons
+  {"CALL" "/images/phone.png"
+   "SMS" "/images/chat.png"})
+
+(defn- get-type-image
+  [notification]
+  [:img {:src (get notification-icons (:type notification))}])
+
 (defn display-notifications
   [notifications]
   (layout/create-entity-table "entity-table"
                               [[:status "Estado"]
                                [:created "Iniciada"]
-                               [:type "Tipo"]
+                               [:type "Tipo" get-type-image]
                                [:message "Mensaje"]]
                               notifications
                               [["/notifications/%s/view" "Ver"]
@@ -75,34 +88,32 @@
 
 (defn index
   [notifications]
-  (layout/common "Notificaciones"
+  (layout/common :notifications
+                 "Notificaciones"
                  (layout/button-new "Nueva Notificacion" "/notifications/new")
                  (display-notifications notifications)))
 
 (defn- recipient-table
   [recipients]
   [:table {:id "recipients"}
-   [:thead [:tr [:th "Nombre"] [:th "Tipo"] [:th "Estado"] [:th "Intentos"] [:th "Fallas"] [:th "Conexiones"]]]
+   [:thead [:tr [:th "Nombre"] [:th "Estado"] [:th "Intentos"] [:th "Fallas"]]]
    [:tbody
     (map (fn [r]
           [:tr
            [:td (:name r)]
-           [:td (:recipient_type r)]
            [:td (:last_status r)]
            [:td (:attempts r)]
-           [:td (:failed r)]
-           [:td (:connected r)]])
+           [:td (:failed r)]])
          recipients)]])
 
 (defn- attempts-table
   [attempts]
   [:table {:id "attempts"}
-   [:thead [:tr [:th "Nombre"] [:th "Tipo"] [:th "Estado"] [:th "Fecha"] [:th "Direccion"] [:th "Causa"]]]
+   [:thead [:tr [:th "Nombre"] [:th "Estado"] [:th "Fecha"] [:th "Direccion"] [:th "Causa"]]]
    [:tbody
     (map (fn [a]
            [:tr
            [:td (:name a)]
-           [:td (:recipient_type a)]
            [:td (:status a)]
            [:td (:delivery_date a)]
            [:td (:delivery_address a)]
@@ -111,29 +122,31 @@
 
 (defn render-dashboard
   [notification attempts]
-  (layout/common (:message notification)
+  (layout/common :notifications
+                 (:message notification)
                  (include-css "/css/dashboard.css")
                  (get-title notification)
                  [:div {:id "charts"}
                   [:div {:id "recipients_chart"}
-                   [:div "Summary recipientes"]
+                   [:h4 "Resumen de recipientes"]
                    [:img {:src (format "/notifications/%s/rcpt-chart" (:id notification))}]]
                   [:div {:id "attempts_chart"}
-                   [:div "Summar intentos totales"]
+                   [:h4 "Resumen de intentos totales"]
                    [:img {:src (format "/notifications/%s/attempts-chart" (:id notification))}]]]
                  [:div {:id "details"}
                   [:div {:id "recipients_detail"}
-                   [:div "Recipientes"]
+                   [:h4 "Detalle de recipientes"]
                    (recipient-table (:members notification))]
                   [:div {:id "attempts_detail"}
-                   [:div "Intentos totales"]
+                   [:h4 "Detalle de intentos totales"]
                    (attempts-table attempts)]]
                  [:script {:type "text/javascript" :language "javascript"}
                   "$('#attempts').dataTable();$('#recipients').dataTable();"]))
 
 (defn render-new
   [policies trunks contacts groups]
-  (layout/common (get-title nil)
+  (layout/common :notifications
+                 (get-title nil)
                  (notification-form nil policies trunks contacts groups)
                  [:div {:id "notification-id" :style "display:none"} ""]
                  (include-css "/css/360player.css")

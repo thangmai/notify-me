@@ -13,7 +13,7 @@
 
 (defn- footer
   []
-  [:div {:class "grid_12"} "Copygright blablabla"])
+  [:div {:class "grid_12"} "2013 © Copyright Intception . All rights reserved"])
 
 (def menu-actions
   (array-map :offices ["Oficinas" "/offices"]
@@ -50,7 +50,7 @@
     :class "buttonNew"
     :onclick (format "window.location='%s';" url)}])
 
-(defn common [title & content]
+(defn common [selection title & content]
   (html
    (doctype :html5)
    [:head
@@ -75,7 +75,7 @@
     [:div {:class "row header"}
      (header title)]
     [:div {:class "row content"}
-     [:div {:class "grid_2"} (menu :users)]
+     [:div {:class "grid_2"} (menu selection)]
      [:div {:class "grid_10"}
       [:h2 {:class "container"} title]
       [:div {:id "content" :class "container"} content]]]
@@ -96,7 +96,12 @@
      (map (fn [e]
             [:tr
              ;;column fields
-             (map (fn [c] [:td (get e (c 0))]) columns)
+             (map (fn
+                    [c]
+                    [:td (if-let [f (get c 2)]
+                           (f e)
+                           (get e (c 0)))])
+                  columns)
              ;;actions
              [:td
               (map (fn [a] [:a {:href (format (a 0) (:id e))} (a 1)]) actions)]])
