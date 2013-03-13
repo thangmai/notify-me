@@ -1,0 +1,7 @@
+#content 							{float:left;clear:both} 
+
+#recipients_chart,#attempts_chart	{float:left;width:445px}
+#recipients_chart 					{margin-right:28px}
+
+#recipients_detail,#attempts_detail	{float:left;width:445px}
+#recipients_detail 					{margin-right:28px}
