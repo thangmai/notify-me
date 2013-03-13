@@ -1,184 +1,493 @@
-html 	{margin:0px;background:-webkit-linear-gradient(#e4eeff,#7b9ad0);background-attachment:fixed;height:100%}
-body 	{margin:0px;font-family:"Trebuchet MS";height:100%}
-
-
-.login .back {background-image:url(../images/patternBkg.png);width:100%;height:100%;min-height:500px}
-
-.login .container {position:absolute;padding:20px;width:394px;min-height:160px;border:1px solid #f9f9f9;left:50%;top:50%;margin-left:-217px;margin-top:-100px;
-background:/* url(../images/megaphone.png) 430px 25px no-repeat */ #ffffff;/* padding-right:200px; */
-
--moz-box-shadow: 0px 0px 6px #666666;
--webkit-box-shadow: 0px 0px 6px #666666;
--o-box-shadow: 0px 0px 6px #666666;
--ms-box-shadow: 0px 0px 6px #666666;
--khtml-box-shadow: 0px 0px 6px #666666;
-box-shadow: 0px 0px 6px #666666;
-
+html {
+    margin:0px;
+    background:-webkit-linear-gradient(#e4eeff,#7b9ad0);
+    background-attachment:fixed;
+    height:100%
 }
 
-.login .container .logo {margin:0px;color:#111111;padding:0px;font-weight:bold;display:block;font-size:48px;height:105px;margin-top:-105px;margin-bottom:0px;margin-left:33px;padding-left:90px;text-shadow:0px 0px 6px #666666;background:url(../images/megaphoneTitle2.png) no-repeat -10px -15px;}
-
-.login .innerContainer {background-color:#e4eeff;float:left;padding-top:30px;padding-bottom:30px/* ;border:1px solid #b0ccfd */}
-
-.login .loginLabel {width:116px;display:block;float:left;height:24px;text-align:right;padding-right:10px;padding-top:3px;margin-bottom:15px;color:#333333;text-shadow:1px 1px 0px #ffffff}
-.login .loginField {width:200px;display:block;float:left;height:25px;border:2px solid #dddddd;margin-bottom:15px}
-
-.login .loginButton {height:30px;width:140px;float:left;margin-top:12px;/* background-color:#ff9900; *//* background-color:#7b9ad0; */background-color:#333333;color:#ffffff;font-weight:bold;border:2px solid #ffffff;text-transform:uppercase;
-margin-left:126px;
--moz-box-shadow: 0px 0px 6px #666666;
--webkit-box-shadow: 0px 0px 6px #666666;
--o-box-shadow: 0px 0px 6px #666666;
--ms-box-shadow: 0px 0px 6px #666666;
--khtml-box-shadow: 0px 0px 6px #666666;
-box-shadow: 0px 0px 6px #666666;cursor:pointer
+body {
+    margin:0px;
+    font-family:"Trebuchet MS";
+    height:100%
 }
 
-.login .loginButton:hover {background-color:#7b9ad0}
+.login .back {
+    background-image:url(../images/patternBkg.png);
+    width:100%;
+    height:100%;
+    min-height:500px
+}
 
+.login .container {
+    position:absolute;
+    padding:20px;
+    width:394px;
+    min-height:160px;
+    border:1px solid #f9f9f9;
+    left:50%;
+    top:50%;
+    margin-left:-217px;
+    margin-top:-100px;
+    background:/* url(../images/megaphone.png) 430px 25px no-repeat */ #ffffff;/* padding-right:200px; */
+    -moz-box-shadow: 0px 0px 6px #666666;
+    -webkit-box-shadow: 0px 0px 6px #666666;
+    -o-box-shadow: 0px 0px 6px #666666;
+    -ms-box-shadow: 0px 0px 6px #666666;
+    -khtml-box-shadow: 0px 0px 6px #666666;
+    box-shadow: 0px 0px 6px #666666;
+}
 
+.login .container .logo {
+    margin:0px;
+    color:#111111;
+    padding:0px;
+    font-weight:bold;
+    display:block;
+    font-size:48px;
+    height:105px;
+    margin-top:-105px;
+    margin-bottom:0px;
+    margin-left:33px;
+    padding-left:90px;
+    text-shadow:0px 0px 6px #666666;
+    background:url(../images/megaphoneTitle2.png) no-repeat -10px -15px;
+}
+
+.login .innerContainer {
+    background-color:#e4eeff;
+    float:left;
+    padding-top:30px;
+    padding-bottom:30px/* ;border:1px solid #b0ccfd */
+}
+
+.login .loginLabel {
+    width:116px;
+    display:block;
+    float:left;
+    height:24px;
+    text-align:right;
+    padding-right:10px;
+    padding-top:3px;
+    margin-bottom:15px;
+    color:#333333;
+    text-shadow:1px 1px 0px #ffffff
+}
+
+.login .loginField {
+    width:200px;
+    display:block;
+    float:left;
+    height:25px;
+    border:2px solid #dddddd;
+    margin-bottom:15px
+}
+
+.login .loginButton {
+    height:30px;
+    width:140px;
+    float:left;
+    margin-top:12px;
+    /* background-color:#ff9900; *//* background-color:#7b9ad0; */
+    background-color:#333333;
+    color:#ffffff;
+    font-weight:bold;
+    border:2px solid #ffffff;
+    text-transform:uppercase;
+    margin-left:126px;
+    -moz-box-shadow: 0px 0px 6px #666666;
+    -webkit-box-shadow: 0px 0px 6px #666666;
+    -o-box-shadow: 0px 0px 6px #666666;
+    -ms-box-shadow: 0px 0px 6px #666666;
+    -khtml-box-shadow: 0px 0px 6px #666666;
+    box-shadow: 0px 0px 6px #666666;
+    cursor:pointer
+}
+
+.login .loginButton:hover {
+    background-color:#7b9ad0
+}
 
 /*----page */
 
-.row {width:1200px;margin:0 auto;}
+.row {
+    width:1200px;
+    margin:0 auto;
+}
 
-.row.header 	{width:100%;margin:0px}
-.row.footer 	{}
+.row.header {
+    width:100%;
+    margin:0px
+}
 
-.row.content {width:1160px;margin-top:20px;background-color:#f9f9f9;
--moz-box-shadow: 0px 0px 10px #666666;
--webkit-box-shadow: 0px 0px 10px #666666;
--o-box-shadow: 0px 0px 10px #666666;
--ms-box-shadow: 0px 0px 10px #666666;
--khtml-box-shadow: 0px 0px 10px #666666;
-box-shadow: 0px 0px 10px #666666;
+.row.footer {}
 
+.row.content {
+    width:1160px;
+    margin-top:20px;
+    background-color:#f9f9f9;
+    -moz-box-shadow: 0px 0px 10px #666666;
+    -webkit-box-shadow: 0px 0px 10px #666666;
+    -o-box-shadow: 0px 0px 10px #666666;
+    -ms-box-shadow: 0px 0px 10px #666666;
+    -khtml-box-shadow: 0px 0px 10px #666666;
+    box-shadow: 0px 0px 10px #666666;
 } 
 
-.row.header > div {width:1200px;margin:0 auto} 
+.row.header > div {
+    width:1200px;
+    margin:0 auto
+} 
 
-
-.header 	{background-color:#111111;height:60px;
--moz-box-shadow: 0px 0px 10px #666666;
--webkit-box-shadow: 0px 0px 10px #666666;
--o-box-shadow: 0px 0px 10px #666666;
--ms-box-shadow: 0px 0px 10px #666666;
--khtml-box-shadow: 0px 0px 10px #666666;
-box-shadow: 0px 0px 10px #666666;
+.header {
+    background-color:#111111;
+    height:60px;
+    -moz-box-shadow: 0px 0px 10px #666666;
+    -webkit-box-shadow: 0px 0px 10px #666666;
+    -o-box-shadow: 0px 0px 10px #666666;
+    -ms-box-shadow: 0px 0px 10px #666666;
+    -khtml-box-shadow: 0px 0px 10px #666666;
+    box-shadow: 0px 0px 10px #666666;
 }
 
-.footer 	{height:60px;width:1160px;background-color:#7b9ad0;margin:0 auto;margin-top:10px;
- -moz-box-shadow: 0px 0px 10px #666666;
--webkit-box-shadow: 0px 0px 10px #666666;
--o-box-shadow: 0px 0px 10px #666666;
--ms-box-shadow: 0px 0px 10px #666666;
--khtml-box-shadow: 0px 0px 10px #666666;
-box-shadow: 0px 0px 10px #666666; 
-
+.footer {
+    height:60px;
+    width:1160px;
+    background-color:#7b9ad0;
+    margin:0 auto;
+    margin-top:10px;
+    -moz-box-shadow: 0px 0px 10px #666666;
+    -webkit-box-shadow: 0px 0px 10px #666666;
+    -o-box-shadow: 0px 0px 10px #666666;
+    -ms-box-shadow: 0px 0px 10px #666666;
+    -khtml-box-shadow: 0px 0px 10px #666666;
+    box-shadow: 0px 0px 10px #666666; 
 }
-.grid_12 {width:auto;text-align:left;color:#eeeeee;margin:0 auto;padding:0px;float:none;display:block;padding-left:20px;padding-top:15px}
 
-h1 {margin:0px;margin-top:5px;height:55px;font-family:"Trebuchet MS";color:#ffffff;padding:0px;font-weight:bold;display:block;font-size:32px;padding-left:60px;padding-top:5px;text-shadow:0px 0px 6px #666666;background:url(../images/megaphoneTitleHeader.png) no-repeat 0px 0px;
+.grid_12 {
+    width:auto;
+    text-align:left;
+    color:#eeeeee;
+    margin:0 auto;
+    padding:0px;
+    float:none;
+    display:block;
+    padding-left:20px;
+    padding-top:15px
 }
 
-.grid_4:first-child {margin-left:20px}
-.grid_4:last-child  {float:right;width:auto}
+h1 {
+    margin:0px;
+    margin-top:5px;
+    height:55px;
+    font-family:"Trebuchet MS";
+    color:#ffffff;
+    padding:0px;
+    font-weight:bold;
+    display:block;
+    font-size:32px;
+    padding-left:60px;
+    padding-top:5px;
+    text-shadow:0px 0px 6px #666666;
+    background:url(../images/megaphoneTitleHeader.png) no-repeat 0px 0px;
+}
 
-.logged-user {float:left;font-size:14px;margin-top:24px;margin-right:11px;padding-right:10px;border-right:1px solid #666666;color:#999999}
-.grid_4:last-child a{float:left;font-size:14px;margin-top:24px;text-decoration:none;color:#7b9ad0}
-.grid_4:last-child a:hover {color:#ffffff}
+.grid_4:first-child {
+    margin-left:20px
+}
+
+.grid_4:last-child  {
+    float:right;
+    width:auto
+}
+
+.logged-user {
+    float:left;
+    font-size:14px;
+    margin-top:24px;
+    margin-right:11px;
+    padding-right:10px;
+    border-right:1px solid #666666;
+    color:#999999
+}
+
+.grid_4:last-child a {
+    float:left;
+    font-size:14px;
+    margin-top:24px;
+    text-decoration:none;
+    color:#7b9ad0
+}
+
+.grid_4:last-child a:hover {
+    color:#ffffff
+}
 
 /* menu */
-.grid_2 		{background-color:#f9f9f9;margin:0px;/* ;margin-top:20px; *//* border:1px solid #ffffff; */width:200px;
+.grid_2 {
+    background-color:#f9f9f9;
+    margin:0px;
+    /* ;margin-top:20px; *//* border:1px solid #ffffff; */width:200px;
 /* -moz-box-shadow: 0px 0px 10px #666666;
--webkit-box-shadow: 0px 0px 10px #666666;
--o-box-shadow: 0px 0px 10px #666666;
--ms-box-shadow: 0px 0px 10px #666666;
--khtml-box-shadow: 0px 0px 10px #666666;
-box-shadow: 0px 0px 10px #666666; */
+   -webkit-box-shadow: 0px 0px 10px #666666;
+   -o-box-shadow: 0px 0px 10px #666666;
+   -ms-box-shadow: 0px 0px 10px #666666;
+   -khtml-box-shadow: 0px 0px 10px #666666;
+   box-shadow: 0px 0px 10px #666666; */
 }
-.grid_2 ul 	{list-style:none;margin:0px;padding:0px;border-bottom:1px solid #ffffff;border-top:1px solid #dddddd;margin-top:55px}
-.grid_2 li	{border-bottom:1px solid #dddddd;border-top:1px solid #ffffff} 
 
-.grid_2 li.selected {background-color:#ffffff;font-weight:bold}
+.grid_2 ul {
+    list-style:none;
+    margin:0px;
+    padding:0px;
+    border-bottom:1px solid #ffffff;
+    border-top:1px solid #dddddd;
+    margin-top:55px
+}
 
-.grid_2 li a	{height:20px;padding-right:10px;padding-left:20px;padding-top:8px;padding-bottom:8px;display:block;text-decoration:none;color:#111111;text-shadow:1px 1px 0px #ffffff}
-.grid_2 li a:hover {background-color:#ffffff;color:#7b9ad0}
+.grid_2 li {
+    border-bottom:1px solid #dddddd;
+    border-top:1px solid #ffffff
+}
 
-.grid_2 li.selected a,.grid_2 li.selected a:hover {color:#666666;cursor:default}
+.grid_2 li.selected {
+    background-color:#ffffff;
+    font-weight:bold
+}
 
-.grid_2 li:first-child 	{border-top:none}
+.grid_2 li a {
+    height:20px;
+    padding-right:10px;
+    padding-left:20px;
+    padding-top:8px;
+    padding-bottom:8px;
+    display:block;
+    text-decoration:none;
+    color:#111111;
+    text-shadow:1px 1px 0px #ffffff
+}
 
+.grid_2 li a:hover {
+    background-color:#ffffff;
+    color:#7b9ad0
+}
+
+.grid_2 li.selected a,.grid_2 li.selected a:hover {
+    color:#666666;
+    cursor:default
+}
+
+.grid_2 li:first-child 	{
+    border-top:none
+}
 
 /* content*/
-.grid_10 {background-color:#ffffff;margin:0px;/* margin-top:20px */width:919px;padding:20px;padding-bottom:50px;border-left:1px solid #dddddd;min-height:400px;
+.grid_10 {
+    background-color:#ffffff;
+    margin:0px;/* margin-top:20px */
+    width:919px;
+    padding:20px;
+    padding-bottom:50px;
+    border-left:1px solid #dddddd;
+    min-height:400px;
 /* -moz-box-shadow: 0px 0px 10px #666666;
--webkit-box-shadow: 0px 0px 10px #666666;
--o-box-shadow: 0px 0px 10px #666666;
--ms-box-shadow: 0px 0px 10px #666666;
--khtml-box-shadow: 0px 0px 10px #666666;
-box-shadow: 0px 0px 10px #666666; */}
+   -webkit-box-shadow: 0px 0px 10px #666666;
+   -o-box-shadow: 0px 0px 10px #666666;
+   -ms-box-shadow: 0px 0px 10px #666666;
+   -khtml-box-shadow: 0px 0px 10px #666666;
+   box-shadow: 0px 0px 10px #666666; */
+}
 
-h2 {font-family:"Trebuchet MS";font-size:22px;color:#7b9ad0;width:auto;float:left;padding:0px;margin:0px;padding-top:4px}
+h2 {
+    font-family:"Trebuchet MS";
+    font-size:22px;
+    color:#7b9ad0;
+    width:auto;
+    float:left;
+    padding:0px;
+    margin:0px;
+    padding-top:4px
+}
 	
-input.buttonNew {font-family:"Trebuchet MS";font-size:14px;float:right;padding:6px;padding-left:20px;padding-right:20px;margin-top:-22px}
+input.buttonNew {
+    font-family:"Trebuchet MS";
+    font-size:14px;
+    float:right;
+    padding:6px;
+    padding-left:20px;
+    padding-right:20px;
+    margin-top:-22px
+}
 
-.dataTables_length,.dataTables_filter {margin-bottom:10px;margin-top:30px;color:#999999}
-.dataTables_length {padding-left:5px}
+.dataTables_length,.dataTables_filter {
+    margin-bottom:10px;
+    margin-top:30px;
+    color:#999999
+}
 
-.contact-table .dataTables_length,.contact-table .dataTables_filter {margin-top:20px}
+.dataTables_length {
+    padding-left:5px
+}
 
-.dataTable 	{border-collapse:collapse;background-color:#f9f9f9;margin-top:10px;border:1px solid #dddddd}
+.contact-table .dataTables_length,.contact-table .dataTables_filter {
+    margin-top:20px
+}
+
+.dataTable {
+    border-collapse:collapse;
+    background-color:#f9f9f9;
+    margin-top:10px;
+    border:1px solid #dddddd
+}
 
 table.dataTable thead th {height:20px;border-bottom:1px solid #dddddd;padding-top:10px} 	
-table.dataTable tbody td {height:20px;padding-bottom:8px;padding-top:8px;border-bottom:1px solid #dddddd}
 
+table.dataTable tbody td {
+    height:20px;
+    padding-bottom:8px;
+    padding-top:8px;
+    border-bottom:1px solid #dddddd
+}
 
-table.dataTable tbody td a{color:#7b9ad0;text-decoration:none;margin-left:6px;display:block;background-color:#fafafaf;padding:4px;padding-bottom:2px;padding-top:2px;width:auto;float:left;border:1px solid #dddddd}  
-table.dataTable tbody td a:hover{color:#111111;background-color:#ffffff}  
+table.dataTable tbody td a {
+    color:#7b9ad0;
+    text-decoration:none;
+    margin-left:6px;
+    display:block;
+    background-color:#fafafaf;
+    padding:4px;
+    padding-bottom:2px;
+    padding-top:2px;
+    width:auto;
+    float:left;
+    border:1px solid #dddddd
+}  
 
-table.dataTable tr.odd td{background-color:#fbfbfb;}
-table.dataTable tr.even td{background-color:#ffffff;}
+table.dataTable tbody td a:hover {
+    color:#111111;
+    background-color:#ffffff
+}  
 
-table.dataTable tr.odd td.sorting_1 	{background-color:#f2f2f2;color:#333333}
-table.dataTable tr.even td.sorting_1 	{background-color:#f5f5f5;color:#333333}
+table.dataTable tr.odd td {
+    background-color:#fbfbfb;
+}
 
-.dataTables_paginate 	{color:#666666;height:20px;padding-top:10px;padding-right:5px}
-.dataTables_info	{color:#999999;height:20px;padding-top:10px;padding-left:5px}
+table.dataTable tr.even td {
+    background-color:#ffffff;
+}
 
-.dataTables_paginate a {color:#7b9ad0}
+table.dataTable tr.odd td.sorting_1 {
+    background-color:#f2f2f2;
+    color:#333333
+}
 
+table.dataTable tr.even td.sorting_1 {
+    background-color:#f5f5f5;
+    color:#333333
+}
 
+.dataTables_paginate {
+    color:#666666;
+    height:20px;
+    padding-top:10px;
+    padding-right:5px
+}
+
+.dataTables_info {
+    color:#999999;
+    height:20px;
+    padding-top:10px;
+    padding-left:5px
+}
+
+.dataTables_paginate a {
+    color:#7b9ad0
+}
+
+.dataTable td img {
+    height:18px;
+    width:18px
+}
 /* form */
 
 /* .container {float:left;clear:both;} */
 
-div.container {padding-top:20px}
+div.container {
+    padding-top:20px
+}
 
-.form_demo {width:920px;background-color:#fcfcfc;border:1px solid #eeeeee;margin-top:30px}
+.form_demo {
+    width:920px;
+    background-color:#fcfcfc;
+    border:1px solid #eeeeee;
+    margin-top:30px
+}
 
-.form_demo th {width:200px;height:19px;border-bottom:1px solid #eeeeee;padding-top:11px;padding-right:8px}
+.form_demo th {
+    width:200px;
+    height:19px;
+    border-bottom:1px solid #eeeeee;
+    padding-top:11px;
+    padding-right:8px
+}
 
-.form_demo td {height:20px;padding-top:10px;border-bottom:1px solid #eeeeee}
+.form_demo td {
+    height:20px;
+    padding-top:10px;
+    border-bottom:1px solid #eeeeee
+}
 
-input#save,input#cancel {font-family:"Trebuchet MS";font-size:14px;padding:6px;padding-left:20px;padding-right:20px;margin-right:5px;margin-top:40px;float:left}
+input#save,input#cancel {
+    font-family:"Trebuchet MS";
+    font-size:14px;
+    padding:6px;
+    padding-left:20px;
+    padding-right:20px;
+    margin-right:5px;
+    margin-top:40px;
+    float:left
+}
+
 input#save {}
 
-.form_demo input[type="text"],.form_demo input[type="password"],.form_demo input[type="email"] {width:230px}
-
-
+.form_demo input[type="text"],.form_demo input[type="password"],.form_demo input[type="email"] {
+    width:230px
+}
 
 
 /* contact page */
 
-.contact-table {padding:0px;width:445px;float:left}
-.contact-table:first-child {margin-right:28px}
+.contact-table {
+    padding:0px;
+    width:445px;
+    float:left
+}
 
-h4 {font-family:"Trebuchet MS";font-size:14px;font-weight:bold;color:#666666;margin:0px;padding:0px;border-bottom:1px solid #dddddd;padding-bottom:6px;margin-top:50px;padding-left:10px}
+.contact-table:first-child {
+    margin-right:28px
+}
 
+h4 {
+    font-family:"Trebuchet MS";
+    font-size:14px;
+    font-weight:bold;
+    color:#666666;
+    margin:0px;
+    padding:0px;
+    border-bottom:1px solid #dddddd;
+    padding-bottom:6px;
+    margin-top:50px;
+    padding-left:10px
+}
 
 /*message*/
-#contacts {margin-bottom:20px;float:left}
-.form-message {padding:10px}
+#contacts {
+    margin-bottom:20px;
+    float:left
+}
+
+.form-message {
+    padding:10px
+}
 
 
 
