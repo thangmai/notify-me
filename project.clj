@@ -26,12 +26,18 @@
                  [crypto-random "1.1.0"]
                  ;;asterisk
                  [clj-asterisk "0.2.0"]
+                 ;;sms library
+                 [clj-ancel-sms "0.1.0"]
+                 [robert/hooke "1.3.0"]
                  ;;quartz wrapper for jobs
                  [clojurewerkz/quartzite "1.0.1"]
                  ;;charts
                  [incanter "1.5.0-SNAPSHOT"]
                  ;;testing
-                 [midje "1.4.0"]]
+                 [midje "1.4.0"]
+                 ;;logging
+                 [org.clojure/tools.logging "0.2.3"]
+                 [clj-logging-config "1.9.10"]]
   :source-paths ["src/clj"]
   :hooks [leiningen.cljsbuild]
   :main notify-me.server

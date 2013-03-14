@@ -1,7 +1,9 @@
 (ns dispatchers.call
-  (:require [clj-asterisk.manager :as manager]
+  (:require [notify-me.jobs.dispatcher :as dispatcher]
+            [clj-asterisk.manager :as manager]
             [clj-asterisk.events :as events]
-            [dispatchers.model :as model])
+            [dispatchers.model :as model]
+            [clojure.tools.logging :as log])
   (:import java.util.UUID))
 
 ;; Signal the end of the call to the waiting promise in order to
@@ -37,12 +39,24 @@
 
 (defmethod events/handle-event :default
   [event context]
-  (println (format "Unhandled Event => %s" event)))
+  (log/debug (format "Unhandled Event => %s" event)))
+
+(defmethod model/normal-clearing? "CALL"
+  [notification result]
+  (= "16" (:Cause result)))
+
+(defmethod model/get-cause-name "CALL"
+  [notification result]
+  (case (:Cause result)
+    "17" "BUSY"
+    "19" "NO ANSWER"
+    "FAILED"))
 
 (defn call
   "Call a contact and wait till the call ends.
    Function returns the hangup event or nil if timedout"
   [context notification contact]
+  (println "Dialing contact " contact)
   (manager/with-connection context
     (let [trunk (model/get-trunk notification)
           call-id (.toString (java.util.UUID/randomUUID))
@@ -65,7 +79,7 @@
                            (deref prom 200000 {:error ::timeout}) ;;TODO
                            ;;where to i get timeout from? it depends on the
                            ;;call/prompt length
-                           (deref prom 60000 {:error ::timeout}))))))
+                           (deref prom 10000 {:error ::timeout}))))))
 
 (defn dispatch-calls
   "Returns the list of futures of each call thread (one p/contact)"
@@ -82,6 +96,7 @@
   "Loops until all contacts for a notification are reached or finally
    cancelled"
   [notification context]
+  (log/debug "Processing notification")
   (model/update-status! notification "RUNNING")
   (let [total-ports (get-available-ports notification)
         contact-list (-> (model/retrieve-rcpt notification)
@@ -107,17 +122,17 @@
                  (println (format "Pending %s Finished %s Failed %s Free Ports %s Dispatched %s"
                                   (count pending) (count finished) (count failed) free-ports
                                   (count dialing)))
-                 (Thread/sleep 100)
-                 (recur (concat (drop free-ports remaining) (map :contact failed))
+                 (Thread/sleep 1000)
+                 (recur (concat (drop free-ports remaining) (map (fn [r] (:contact @r)) failed))
                         (concat pending dialing))))))
     (model/update-status! notification "FINISHED")))
 
-(defn dispatch
-  "Motification dispatch function entry point, receives
-   the notification to process"
+(defmethod dispatcher/dispatch "CALL"
   [notification]
   (manager/with-config {:name "192.168.0.127"}
     (if-let [context (manager/login "guille" "1234" :with-events)]
       (manager/with-connection context
-        (process notification context))
-      (println "Unable to login"))))
+        (process notification context)
+        (manager/logout))
+      (log/error "Unable to login")))
+  (log/info "Finishing dispatch for " (:id notification)))

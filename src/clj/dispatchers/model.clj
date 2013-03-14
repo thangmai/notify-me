@@ -2,7 +2,8 @@
   (:require [clojure.java.jdbc :as sql]
             [notify-me.models.trunk :as trunk]
             [notify-me.models.policy :as delivery-policies]
-            [notify-me.models.notification :as notification-model])
+            [notify-me.models.notification :as notification-model]
+            [clojure.tools.logging :as log])
   (:import java.util.UUID))
 
 (def ^:dynamic *database-url* "postgresql://localhost/notify-me?user=guille&password=bogan731")
@@ -78,6 +79,12 @@
               (assoc res (:id contact) (assoc contact :groups [(:group_id contact)]))))
           {} contact-list))
 
+(defn direct-contacts
+  "Return notification direct contacts with addresses expanded"
+  [notification]
+  (sql/with-connection *database-url*
+    (contact-rcpt notification)))
+
 (defn expand-rcpt
   "Expands the recipient list groups, creating a set of contacts
    (i.e. if a contact belongs to more than one group, it appears
@@ -87,17 +94,20 @@
   (sql/with-connection *database-url*
     (let [direct-contacts (contact-rcpt notification) ;;no expansion needed
           group-rcpts (filter #(= "G" (:recipient_type %)) recipients)
-          group-contacts (apply concat (map #(group-rcpt % notification) group-rcpts))]
-      (join-contacts (concat direct-contacts group-contacts)))))
-
+          group-contacts (apply concat (map #(group-rcpt % notification) group-rcpts))
+          joined-contacts (join-contacts (concat direct-contacts group-contacts))]
+      (map #(get % 1) joined-contacts))))
 
 (defn save-delivery
   "Saves the connection attempt"
-  [contact notification result cause]
-  (sql/with-connection *database-url*
-    (sql/insert-values :message_delivery
-                       [:notification :recipient_id :recipient_type :delivery_address :status :cause]
-                       [(:id notification) (:id contact) "C" (:address contact) result cause])))
+  ([contact notification result cause]
+     (save-delivery contact notification result cause "C"))
+  ([recipient notification result cause recipient_type]
+     (log/debug "Saving delivery recipient:" recipient " result:" result " cause:" cause)
+     (sql/with-connection *database-url*
+       (sql/insert-values :message_delivery
+                          [:notification :recipient_id :recipient_type :delivery_address :status :cause]
+                          [(:id notification) (:id recipient) recipient_type (:address recipient) result cause]))))
 
 (defn remaining-attempts?
   "Counts how many attempts for each type a contact has on a given
@@ -151,43 +161,36 @@
                     RETURNING *"
                    last_status (:id notification) group-id (:id notification) group-id)])))))
 
+;;TODO update counters!
 (defn- update-contact-result
   "In case the contact was selected as a single entry
    in the notification update the last status of the recipient entry.
    This is done even if the contact also belongs to a group in order to 'close'
    the entry and let the notification process finish"
-  [contact notification status]
-  (sql/with-connection *database-url*
-    (sql/update-values :notification_recipient
-                       ["notification=? AND recipient_id=? AND recipient_type=?"
-                        (:id notification) (:id contact) "C"]
-                       {:last_status status})))
+  ([contact notification status]
+     (update-contact-result notification contact "C" status))
+  ([notification recipient recipient_type status]
+     (sql/with-connection *database-url*
+       (sql/update-values :notification_recipient
+                          ["notification=? AND recipient_id=? AND recipient_type=?"
+                           (:id notification) (:id recipient) recipient_type]
+                          {:last_status status}))))
 
 (defn get-policies
   [notification]
   (delivery-policies/one {:id (:delivery_policy_id notification)}))
 
+(defmulti normal-clearing? :type [notification result])
 
-;; TODO: this should me moved on a by type basis probably
-;; using a multimethod
-(defn- normal-clearing?
-  [result]
-  (= "16" (:Cause result)))
-
-(defn- get-cause-name
-  [result]
-  (case (:Cause result)
-    "17" "BUSY"
-    "19" "NO ANSWER"
-    "FAILED"))
+(defmulti get-cause-name :type [notification result])
 
 (defn save-result
   "Updates contact trial and returns the result"
   [notification contact result]
   (let [policies (get-policies notification)
         has_chance? (remaining-attempts? contact notification policies) 
-        status (if (not (normal-clearing? result)) 
-                 (or (and has_chance? (get-cause-name result)) "CANCELLED")
+        status (if (not (normal-clearing? notification result)) 
+                 (or (and has_chance? (get-cause-name notification result)) "CANCELLED")
                  "CONNECTED")]
     (save-delivery contact notification status (:Cause result))
     (when (> (count (:groups contact)) 0)
@@ -196,8 +199,8 @@
     ;;this value's gonna reach the main loop who decides whether to
     ;;continue dialing on this contact or not
     (case status
-      "BUSY" (Thread/sleep (:busy_interval_secs policies))
-      "NO ANSWER" (Thread/sleep (:no_answer_interval_secs policies))
+      "BUSY" (Thread/sleep (* (:busy_interval_secs policies) 1000))
+      "NO ANSWER" (Thread/sleep (* (:no_answer_interval_secs policies) 1000))
       :nop)
     {:status status :contact contact}))
 

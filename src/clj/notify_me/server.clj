@@ -2,13 +2,14 @@
   (:require
    [notify-me.webserver :as webserver]
    [clojurewerkz.quartzite.scheduler :as qs]
-   [notify-me.jobs.notifier :as notifier]))
+   [notify-me.jobs.notifier :as notifier]
+   [clj-logging-config.log4j :as log-config]))
 
 (defn -main
   []
-  (alter-var-root #'*read-eval* (constantly false))
   (qs/initialize)
   (qs/start)
   (qs/unschedule-job (notifier/id))
   (qs/schedule (notifier/job) (notifier/trigger))
-  (webserver/start []))
+  (webserver/start [])
+  (qs/shutdown))

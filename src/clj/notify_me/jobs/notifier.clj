@@ -1,12 +1,28 @@
 (ns notify-me.jobs.notifier
-  (:require [clojurewerkz.quartzite.jobs :as j]
-            [clojurewerkz.quartzite.triggers :as t])
+  (:require [notify-me.jobs.dispatcher :as dispatcher]
+            [notify-me.models.notification :as notifications]
+            [dispatchers.call :as call]
+            [dispatchers.sms :as sms]
+            [clojurewerkz.quartzite.jobs :as j]
+            [clojurewerkz.quartzite.triggers :as t]
+            [clojure.tools.logging :as log])
   (:use [clojurewerkz.quartzite.jobs :only [defjob]]
         [clojurewerkz.quartzite.schedule.simple :only [schedule repeat-forever with-interval-in-seconds]]))
 
+(defn start-notification
+  [notification]
+  (log/info "Dispatching notification " (:id notification) " of type " (:type notification))
+  (dispatcher/dispatch notification))
+
+(defn pending-notifications
+  []
+  (let [pending (notifications/search {:status "CREATED"})]
+    (doall (map start-notification pending))))
+
 (defjob Notifier
   [ctx]
-  (println "This is not a comment..."))
+  (log/info "Notifier job running")
+  (pending-notifications))
 
 (defn job
   []
