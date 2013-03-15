@@ -162,7 +162,7 @@
                    last_status (:id notification) group-id (:id notification) group-id)])))))
 
 ;;TODO update counters!
-(defn- update-contact-result
+(defn update-contact-result
   "In case the contact was selected as a single entry
    in the notification update the last status of the recipient entry.
    This is done even if the contact also belongs to a group in order to 'close'
@@ -180,9 +180,8 @@
   [notification]
   (delivery-policies/one {:id (:delivery_policy_id notification)}))
 
-(defmulti normal-clearing? :type [notification result])
-
-(defmulti get-cause-name :type [notification result])
+(defmulti normal-clearing? (fn [notification _] (:type notification)))
+(defmulti get-cause-name (fn [notification _] (:type notification)))
 
 (defn save-result
   "Updates contact trial and returns the result"
