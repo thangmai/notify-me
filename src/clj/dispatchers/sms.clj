@@ -2,6 +2,7 @@
   (:require [notify-me.jobs.dispatcher :as dispatcher]
             [dispatchers.model :as model]
             [sms-drivers.driver :as sms-driver]
+            [sms-drivers.protocol :as sms-protocol]
             [clojure.tools.logging :as log])
   (:use [slingshot.slingshot :only [try+ throw+]]))
 
@@ -31,14 +32,14 @@
   [notification contact]
   (let [number (:address contact)
         message (:message notification)
-        result (sms-driver/sms-to-number *driver* number message)]
+        result (sms-protocol/sms-to-number *driver* number message)]
     (save-result notification (merge contact {:type "C"}) result)))
 
 (defn- send-group-sms
   [notification group-rcpt]
   (let [group-name (:recipient_id group-rcpt)
         message (:message notification)
-        result (sms-driver/sms-to-group *driver* group-name message)]
+        result (sms-protocol/sms-to-group *driver* group-name message)]
     (save-result notification {:address group-name :id group-name :type "G"} result)))
 
 (defn- process
@@ -62,7 +63,7 @@
 (defmethod dispatcher/dispatch "SMS"
   [notification]
   (model/update-status! notification "RUNNING")
-  (binding [*driver* sms-driver/driver]
+  (binding [*driver* sms-driver/load]
     (process notification))
   (model/update-status! notification "FINISHED"))
 

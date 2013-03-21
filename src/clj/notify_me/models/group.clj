@@ -16,7 +16,7 @@
           (map #(insert e/contact_group_member
                         (values {:contact_group_id (:id g)
                                  :contact_id (str->int (:id %))
-                                 :office_id (:office_id g)}))
+                                 :office_id (:office_id g)})) 
                members))
          (assoc g :members members)))))
 

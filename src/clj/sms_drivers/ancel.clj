@@ -1,9 +1,10 @@
 (ns sms-drivers.ancel
   (:require [clj-ancel-sms.messaging :as messaging]
-            [clj-ancel.sms.administration :as admin]
-            [sms-drivers.driver :as driver]
+            [clj-ancel-sms.administration :as admin]
+            [sms-drivers.protocol :as protocol]
             [notify-me.models.contact :as contact]
-            [notify-me.models.group :as group])
+            [notify-me.models.group :as group]
+            [clojure.tools.logging :as log])
   (:use [robert.hooke :only [add-hook]]
         [slingshot.slingshot :only [try+ throw+]]))
 
@@ -12,10 +13,10 @@
 (defrecord SMSEmpresa [^String service ^String tracking])
 
 (extend-type SMSEmpresa
-  driver/SMSDriver
+  protocol/SMSDriver
 
   (group-dispatching? [this] true)
-  
+
   (sms-to-number [this number message]
     (try+
      (if-not (messaging/to-cellphone (:service this) number message)
@@ -25,10 +26,10 @@
   
   (sms-to-group [this group message]
     (try+
-     (if-not (messaging/to-group (:service this) group-name message)
+     (if-not (messaging/to-group (:service this) group message)
        (throw+ {:type ::send-failed}))
      (catch :type e
-       {:error (:type e)})))
+       {:error (:type e)}))))
 
 ;;TODO: this configuration could be coming out of somewhere
 (def driver (SMSEmpresa. "1" "1"))
@@ -90,7 +91,7 @@
      (admin/delete-group (:service driver) (:name group))
      (catch :type e
        (log/error e)))
-    group)))
+    group))
 
 (defn- update-group
   [update-fn group]
