@@ -6,7 +6,10 @@
         dispatchers.data-access-test
         korma.core))
 
-;
+(defn contact-by-id
+  [id contacts]
+  (first (filter #(= id (:id %)) contacts)))
+
 ;;CONTACTS EXPANSION TESTS
 (against-background
  [(around :contents
@@ -24,10 +27,11 @@
   (before :contents (reset! data-atom (create-data)) :after (do (notification/delete! @notif)
                                                                 (drop-data)))]
  (fact "Only contacts get expanded correctly"
-       (reduce #(conj %1 (:address (%2 1))) #{} contacts) => (just [#"1" #"2"]))
+       (reduce #(conj %1 (:address %2)) #{} contacts) => (just [#"1" #"2"]))
  (fact "First contact connected, notification unchanged"
        (let [c (get-contact 1)]
-         (model/save-result n (get contacts (:id c)) {:Cause "16"})
+         (println "Get contact returned " (pr-str c))
+         (model/save-result n (contact-by-id (:id c) contacts) {:Cause "16"})
          (find-recipient c "C" n) => (contains {:last_status "CONNECTED"
                                                 :attempts 1
                                                 :connected 1
@@ -37,7 +41,7 @@
          (find-notification n)    => (contains {:status "CREATED"})))
  (fact "Second contact failed, notification unchanged"
        (let [c (get-contact 2)]
-         (model/save-result n (get contacts (:id c)) {:error "not connected"})
+         (model/save-result n (contact-by-id (:id c) contacts) {:error "not connected"})
          (find-recipient c "C" n)  => (contains {:last_status "FAILED"
                                                  :attempts 1
                                                  :failed 1
@@ -63,10 +67,10 @@
   (before :contents (reset! data-atom (create-data)) :after (do (notification/delete! @notif)
                                                                 (drop-data)))]
  (fact "One group contacts get expanded correctly"
-       (reduce #(conj %1 (:address (%2 1))) #{} contacts) => (just [#"1" #"2"]))
+       (reduce #(conj %1 (:address %2)) #{} contacts) => (just [#"1" #"2"]))
  (fact "First group contact connected, notification unchanged"
        (let [c (get-contact 1)]
-         (model/save-result n (get contacts (:id c)) {:Cause "16"})
+         (model/save-result n (contact-by-id (:id c) contacts) {:Cause "16"})
          ;;recipient group status
          (find-recipient g "G" n) => (contains {:last_status "PROCESSING"
                                                 :attempts 1
@@ -79,7 +83,7 @@
          (find-notification n)    => (contains {:status "CREATED"})))
  (fact "Second group contact failed, notification unchanged"
        (let [c (get-contact 2)]
-         (model/save-result n (get contacts (:id c)) {:error "not connected"})
+         (model/save-result n (contact-by-id (:id c) contacts) {:error "not connected"})
          (find-recipient g "G" n) => (contains {:last_status "PROCESSING"
                                                 :attempts 2
                                                 :failed 1
@@ -107,10 +111,10 @@
   (before :contents (reset! data-atom (create-data)) :after (do (notification/delete! @notif)
                                                                 (drop-data)))]
  (fact "Intersecting groups contacts get expanded correctly, only once, non repeating"
-       (reduce #(conj %1 (:address (%2 1))) [] contacts) => (just ["1" "2" "3" "4"] :in-any-order))
+       (reduce #(conj %1 (:address %2)) [] contacts) => (just ["1" "2" "3" "4"] :in-any-order))
  (fact "First group contact connected, notification unchanged, both groups updated ok"
        (let [c (get-contact 1)]
-         (model/save-result n (get contacts (:id c)) {:Cause "16"})
+         (model/save-result n (contact-by-id (:id c) contacts) {:Cause "16"})
          ;;recipient group 1 status
          (find-recipient g1 "G" n) => (contains {:last_status "PROCESSING"
                                                  :attempts 1
@@ -128,7 +132,7 @@
          (find-notification n)    => (contains {:status "CREATED"})))
  (fact "Second group contact failed, notification unchanged, both groups updated ok"
        (let [c (get-contact 2)]
-         (model/save-result n (get contacts (:id c)) {:error "not connected"})
+         (model/save-result n (contact-by-id (:id c) contacts) {:error "not connected"})
          (find-recipient g1 "G" n) => (contains {:last_status "PROCESSING"
                                                  :attempts 2
                                                  :failed 1
@@ -163,11 +167,11 @@
                                                                 (drop-data)))]
  (fact "Contact has no remaining attempts because of 3 fails"
        (let [c (get-contact 1)]
-         (model/save-result n (get contacts (:id c)) {:error "error 1"})
+         (model/save-result n (contact-by-id (:id c) contacts) {:error "error 1"})
          (model/remaining-attempts? c n (get-policy 1)) => true
-         (model/save-result n (get contacts (:id c)) {:error "error 2"})
+         (model/save-result n (contact-by-id (:id c) contacts) {:error "error 2"})
          (model/remaining-attempts? c n (get-policy 1)) => true
-         (model/save-result n (get contacts (:id c)) {:error "error 3"})
+         (model/save-result n (contact-by-id (:id c) contacts) {:error "error 3"})
          (model/remaining-attempts? c n (get-policy 1)) => false
          ;;recipient group 1 status
          (find-recipient g1 "G" n) => (contains {:last_status "PROCESSING"
@@ -181,7 +185,7 @@
                                                  :failed 3})))
  (fact "Contact has no remaining attempts because it has connected"
        (let [c (get-contact 1)]
-         (model/save-result n (get contacts (:id c)) {:Cause "16"})
+         (model/save-result n (contact-by-id (:id c) contacts) {:Cause "16"})
          (model/remaining-attempts? c n (get-policy 1)) => false
          ;;recipient group 1 status
          (find-recipient g1 "G" n) => (contains {:last_status "PROCESSING"
@@ -218,8 +222,8 @@
  (fact "Group recipient finished because all group contacts has connected"
        (let [c1 (get-contact 1)
              c2 (get-contact 2)]
-         (model/save-result n (get contacts (:id c1)) {:Cause "16"})
-         (model/save-result n (get contacts (:id c2)) {:Cause "16"})
+         (model/save-result n (contact-by-id (:id c1) contacts) {:Cause "16"})
+         (model/save-result n (contact-by-id (:id c2) contacts) {:Cause "16"})
          ;;recipient group status
          (find-recipient g "G" n) => (contains {:last_status "FINISHED"
                                                 :attempts 2
@@ -244,14 +248,14 @@
  (fact "Group recipient finished because all group contacts have failed"
        (let [c1 (get-contact 1)
              c2 (get-contact 2)]
-         (model/save-result n (get contacts (:id c1)) {:error "failed"})
-         (model/save-result n (get contacts (:id c1)) {:error "failed"})
-         (model/save-result n (get contacts (:id c1)) {:error "failed"})
-         (model/save-result n (get contacts (:id c1)) {:error "failed"})
-         (model/save-result n (get contacts (:id c2)) {:error "failed"})
-         (model/save-result n (get contacts (:id c2)) {:error "failed"})
-         (model/save-result n (get contacts (:id c2)) {:error "failed"})
-         (model/save-result n (get contacts (:id c2)) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c1) contacts) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c1) contacts) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c1) contacts) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c1) contacts) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c2) contacts) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c2) contacts) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c2) contacts) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c2) contacts) {:error "failed"})
          ;;recipient group status
          (find-recipient g "G" n) => (contains {:last_status "FINISHED"
                                                 :attempts 8
@@ -282,23 +286,23 @@
              c2 (get-contact 2)
              c3 (get-contact 3)
              c4 (get-contact 4)]
-         (model/save-result n (get contacts (:id c1)) {:error "failed"})
-         (model/save-result n (get contacts (:id c1)) {:error "failed"})
-         (model/save-result n (get contacts (:id c1)) {:error "failed"})
-         (model/save-result n (get contacts (:id c1)) {:error "failed"})
-         (model/save-result n (get contacts (:id c2)) {:error "failed"})
-         (model/save-result n (get contacts (:id c2)) {:error "failed"})
-         (model/save-result n (get contacts (:id c2)) {:error "failed"})
-         (model/save-result n (get contacts (:id c2)) {:error "failed"})
-         (model/save-result n (get contacts (:id c3)) {:Cause "16"})
+         (model/save-result n (contact-by-id (:id c1) contacts) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c1) contacts) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c1) contacts) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c1) contacts) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c2) contacts) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c2) contacts) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c2) contacts) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c2) contacts) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c3) contacts) {:Cause "16"})
          ;;contact 4 has only one fail so it's not finished yet,
          ;;should be retrieved on expansion
-         (model/save-result n (get contacts (:id c4)) {:error "failed"})
+         (model/save-result n (contact-by-id (:id c4) contacts) {:error "failed"})
          ;;recipient group status
          (find-recipient g "G" n) => (contains {:last_status "PROCESSING"
                                                 :attempts 10
                                                 :connected 1
                                                 :failed 9})
          (let [contacts (model/expand-rcpt (model/retrieve-rcpt n) n)]
-           (reduce #(conj %1 (:address (%2 1))) [] contacts)) => (just ["4"]))))
+           (reduce #(conj %1 (:address %2)) [] contacts)) => (just ["4"]))))
 
