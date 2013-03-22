@@ -4,7 +4,7 @@
             [notify-me.models.policy :as delivery-policies]
             [notify-me.models.notification :as notification-model]
             [clojure.tools.logging :as log])
-  (:import java.util.UUID))
+  (:use [slingshot.slingshot :only [try+ throw+]]))
 
 (def ^:dynamic *database-url* "postgresql://localhost/notify-me?user=guille&password=bogan731")
 
@@ -182,6 +182,18 @@
 
 (defmulti normal-clearing? (fn [notification _] (:type notification)))
 (defmulti get-cause-name (fn [notification _] (:type notification)))
+
+(defmethod normal-clearing? :default
+  [notification result]
+  (throw+ {:type ::missing-method 
+           :description (format "Notification %s has no defined handler for normal-clearing?"
+                                (:type notification))}))
+
+(defmethod get-cause-name :default
+  [notification result]
+  (throw+ {:type ::missing-method
+           :description (format "Notification %s has no defined handler for get-cause-name"
+                                (:type notification))}))
 
 (defn save-result
   "Updates contact trial and returns the result"
