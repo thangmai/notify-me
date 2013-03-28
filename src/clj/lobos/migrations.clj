@@ -146,7 +146,7 @@
               (timestamp :delivery_date (default (now)))
               (varchar :delivery_address 20)
               (varchar :status 20)
-              (varchar :cause 10))))
+              (varchar :cause 100))))
   (down []
         (drop (table :message_delivery))))
 
