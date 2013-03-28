@@ -129,10 +129,11 @@
 
 (defmethod dispatcher/dispatch "CALL"
   [notification]
-  (manager/with-config {:name "192.168.0.127"}
-    (if-let [context (manager/login "guille" "1234" :with-events)]
+  (let [trunk (model/get-trunk notification)] 
+    (manager/with-config {:name (:host trunk)}
+      (if-let [context (manager/login (:user trunk) (:password trunk) :with-events)]
       (manager/with-connection context
         (process notification context)
         (manager/logout))
-      (log/error "Unable to login")))
+      (log/error "Unable to login"))))
   (log/info "Finishing dispatch for " (:id notification)))
