@@ -92,6 +92,9 @@
             (varchar :extension 20)
             (varchar :priority 20)
             (varchar :callerid 20)
+            (varchar :host 100)
+            (varchar :user 50)
+            (varchar :password 50)
             (integer :capacity)
             (refer-to :office))))
   (down []
