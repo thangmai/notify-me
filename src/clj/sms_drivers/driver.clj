@@ -8,4 +8,5 @@
 
 (defn load
   []
-  (resolve driver-ns 'driver))
+  (let [dr (resolve (symbol (name driver-ns) "driver"))]
+    @dr))
