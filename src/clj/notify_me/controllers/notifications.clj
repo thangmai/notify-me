@@ -90,14 +90,15 @@
   `(if-let [notification# (model/one {:id ~id})]
      (let [data# (~fn-data notification#)
            keys# (map ~key-field data#)
-           values# (map ~value-field data#)
-           chart# (incanter.charts/pie-chart keys#
-                                             values#
+           values# (map ~value-field data#)]
+       (when (and (seq keys#) (seq values#))
+         (let [chart# (incanter.charts/pie-chart keys#
+                                                 values#
                                              :legend true)
-           label-generator# (StandardPieSectionLabelGenerator. "{1} {0}({2})")]
-       (.. chart# getPlot (setLabelGenerator label-generator#))
-       (doall (map #(.. chart# getPlot (setSectionPaint (% 0) (% 1))) pie-colors))
-       (write-chart chart#))))
+               label-generator# (StandardPieSectionLabelGenerator. "{1} {0}({2})")]
+           (.. chart# getPlot (setLabelGenerator label-generator#))
+           (doall (map #(.. chart# getPlot (setSectionPaint (% 0) (% 1))) pie-colors))
+           (write-chart chart#))))))
 
 (defn- recipients-chart
   [id]
