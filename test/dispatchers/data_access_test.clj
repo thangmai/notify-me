@@ -81,3 +81,7 @@
   [notification]
   (first (select e/notification
                  (where {:id (:id notification)}))))
+
+(defn contact-by-id
+  [id contacts]
+  (first (filter #(= id (:id %)) contacts)))

@@ -131,7 +131,7 @@
                (< (:busy attempts) (:retries_on_busy policies))
                (< (:no_answer attempts) (:no_answer_retries policies))))))) 
 
-(defn- update-group-results
+(defn update-group-results
   "Update the group recipient counters and status for a given notification.
    When no more contacts are left to be reached for this group it's flagged as finished"
   [group-id notification]

@@ -37,7 +37,8 @@
                         (values {:contact_group_id (str->int (:id attributes))
                                  :contact_id (str->int (:id %))
                                  :office_id (:office_id attributes)}))
-             members))))
+             members))
+    (assoc group :members members)))
 
 (defn- get-members
   [group]
@@ -66,6 +67,13 @@
                    :office_id (:office_id group)}))
    (delete e/contact_group
           (where {:id (:id group)}))))
+
+(defn groups-for-contact
+  "Retrieves all the groups belonging to a contact"
+  [contact-id]
+  (select e/contact_group
+          (join :inner e/contact_group_member
+                (and (= :contact_group_member.contact_id contact-id)))))
 
 (defn all
   []

@@ -6,9 +6,6 @@
         dispatchers.data-access-test
         korma.core))
 
-(defn contact-by-id
-  [id contacts]
-  (first (filter #(= id (:id %)) contacts)))
 
 ;;CONTACTS EXPANSION TESTS
 (against-background

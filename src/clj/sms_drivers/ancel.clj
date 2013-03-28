@@ -1,35 +1,36 @@
 (ns sms-drivers.ancel
   (:require [clj-ancel-sms.messaging :as messaging]
             [clj-ancel-sms.administration :as admin]
-            [sms-drivers.protocol :as protocol]
             [notify-me.models.contact :as contact]
             [notify-me.models.group :as group]
             [clojure.tools.logging :as log])
   (:use [robert.hooke :only [add-hook]]
+        [sms-drivers.protocol]
         [slingshot.slingshot :only [try+ throw+]]))
 
 ;;Protocol implementation for message dispatch
 
-(defrecord SMSEmpresa [^String service ^String tracking])
-
-(extend-type SMSEmpresa
-  protocol/SMSDriver
-
+(defrecord SMSEmpresa [^String service ^String tracking]
+  SMSDriver
   (group-dispatching? [this] true)
-
+  
   (sms-to-number [this number message]
     (try+
-     (if-not (messaging/to-cellphone (:service this) number message)
-         (throw+ {:type ::send-failed}))
+     (if-not (messaging/to-cellphone service number message)
+       {:error {:type ::send-failed}})
      (catch :type e
-       {:error (:type e)})))
+       {:error (:type e)})
+     (catch Object _
+       {:error (pr-str (:throwable &throw-context))})))
   
   (sms-to-group [this group message]
     (try+
-     (if-not (messaging/to-group (:service this) group message)
-       (throw+ {:type ::send-failed}))
+     (if-not (messaging/to-group service group message)
+       {:error {:type ::send-failed}})
      (catch :type e
-       {:error (:type e)}))))
+       {:error (:type e)})
+     (catch Object _
+       {:error (pr-str (:throwable &throw-context))}))))
 
 ;;TODO: this configuration could be coming out of somewhere
 (def driver (SMSEmpresa. "1" "1"))
@@ -37,33 +38,58 @@
 ;;Hooks for groups and contacts synchronization
 
 (defn- register-phone-number
+  "Registers the phone number when a new contact is saved"
   [save-fn attributes]
   (when-let [contact (save-fn attributes)]
-    (when (not (admin/phone-registered? (:service driver) (:address attributes)))
-      (admin/register-phone (:service driver) (:tracking driver) (:address attributes)))
+    (try+
+     (when (not (admin/phone-registered? (:service driver) (:cell_phone attributes)))
+       (admin/register-phone (:service driver) (:tracking driver) (:cell_phone attributes)))
+     (catch :type e
+       (log/error e))
+     (catch Object _
+       (log/error (:throwable &throw-context))))
     contact))
 
 (defn- unregister-phone-number
-  [delete-fn contact]
-  (when-let [contact (delete-fn contact)]
-    (admin/unregister-phone (:service driver) (:tracking driver) (:address contact))
-    contact))
+  "Deletes current phone number registration if the number does
+   not exists for a different contact in a different office"
+  [delete-fn c]
+  (when-let [deleted (delete-fn c)]
+    (when (nil? (seq (contact/search {:cell_phone (:cell_phone c)})))
+      (try+ 
+       (admin/unregister-phone (:service driver) (:tracking driver) (:cell_phone c))
+       (catch :type e
+         (log/error e))
+       (catch Object _
+         (log/error (:throwable &throw-context)))))
+    deleted))
 
-;;TODO:if the phone number changes all the groups the contact belongs
-;;to needs to be updated too
 (defn- update-phone-number
-  ""
+  "Updates phone registration when phone changed and belonging groups"
   [update-fn conditions attributes]
   (let [current-contact (contact/one conditions)]
     (when-let [new-contact (update-fn conditions attributes)]
-      (let [old-number (:address current-contact)
-            new-number (:address new-contact)]
+      (let [old-number (:cell_phone current-contact)
+            new-number (:cell_phone new-contact)]
         (when (not= old-number new-number)
           (try+
            (admin/unregister-phone (:service driver) (:tracking driver) old-number)
-           (admin/register-phone (:service driver) (:tracking driver) new-number)
+           (when (not (admin/phone-registered? (:service driver) new-number))
+             (admin/register-phone (:service driver) (:tracking driver) new-number))
+           ;;groups should be searched by contact since same number may have not changed
+           ;;for another office
+           (let [phone-groups (group/groups-for-contact (:id current-contact))]
+             (doseq [group phone-groups]
+               (admin/rmv-phone-from-group (:service driver)
+                                           old-number
+                                           (:name group))
+               (admin/add-phone-to-group (:service driver)
+                                         new-number
+                                         (:name group))))
            (catch :type e
-             (log/error e)))))
+             (log/error e))
+           (catch Object _
+             (log/error (:throwable &throw-context))))))
       new-contact)))
 
 (add-hook #'contact/create! #'register-phone-number)
@@ -71,31 +97,65 @@
 (add-hook #'contact/update! #'update-phone-number)
 
 (defn- register-group
+  "Creates a new group in the ANCEL database"
   [save-fn attributes]
   (when-let [group (save-fn attributes)]
-    (when (not (admin/group-exists? (:service driver) (:name group)))
-      (try+
+    (try+
+     (when (not (admin/group-exists? (:service driver) (:name group)))
        (admin/create-group (:service driver) (:name group))
        (doseq [contact (:members group)]
          (admin/add-phone-to-group (:service driver)
-                                   (:address contact)
-                                   (:name group)))
-       (catch :type e
-         (log/error e))))
+                                   (:cell_phone contact)
+                                   (:name group))))
+     (catch :type e
+       (println e))
+     (catch Object _
+       (println (:throwable &throw-context))))
     group))
 
 (defn- unregister-group
+  "Deletes the group from ANCEL database"
   [delete-fn group]
   (when-let [group (delete-fn group)]
     (try+
      (admin/delete-group (:service driver) (:name group))
      (catch :type e
-       (log/error e)))
+       (log/error e))
+     (catch Object _
+       (log/error (:throwable &throw-context))))
     group))
 
 (defn- update-group
-  [update-fn group]
-  )
+  "When a group changes, remove the phones not there anymore and add the new ones"
+  [update-fn conditions group]
+  (let [current-group (group/one {:id (:id group)})]
+    (when-let [new-group (update-fn conditions group)]
+      (let [old-members (:members current-group)
+            new-members (:members new-group)
+            to-delete (filter (fn [old] 
+                                (not (seq (filter #(= (:id old) (:id %)) new-members))))
+                              old-members)
+            to-add (filter (fn [new] 
+                             (not (seq (filter #(= (:id new) (:id %)) old-members))))
+                           new-members)]
+      (doseq [d to-delete]
+        (try+
+         (admin/rmv-phone-from-group (:service driver)
+                                   (:cell_phone d)
+                                   (:name current-group))
+         (catch :type e
+           (log/error e))
+         (catch Object _
+           (log/error (:throwable &throw-context)))))
+      (doseq [a to-add]
+        (try+ 
+         (admin/add-phone-to-group (:service driver)
+                                   (:cell_phone a)
+                                   (:name current-group))
+         (catch :type e
+           (log/error e))
+         (catch Object _
+           (log/error (:throwable &throw-context)))))))))
 
 (add-hook #'group/create! #'register-group)
 (add-hook #'group/delete! #'unregister-group)
