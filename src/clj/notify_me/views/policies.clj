@@ -21,6 +21,9 @@
           (f/label "retries_on_error" "Reintentos en caso de error")
           (form/text-field action "retries_on_error" (:retries_on_error policy)))
          (form/field
+          (f/label "retries_on_busy" "Reintentos por ocupado")
+          (form/text-field action "retries_on_busy" (:retries_on_busy policy)))
+         (form/field
           (f/label "busy_interval_secs" "Intervalo en ocupado(segs)")
           (form/text-field action "busy_interval_secs" (:busy_interval_secs policy)))
          (form/field
