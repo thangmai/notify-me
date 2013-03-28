@@ -1,5 +1,6 @@
 (ns notify-me.views.layout
-  (:require [notify-me.models.permissions :as permissions])
+  (:require [notify-me.models.permissions :as permissions]
+            [ring.util.response :as response])
   (:use [hiccup.core :only [html]]
         [hiccup.page :only [doctype include-css include-js]]))
 
@@ -51,36 +52,39 @@
     :onclick (format "window.location='%s';" url)}])
 
 (defn common [selection title & content]
-  (html
-   (doctype :html5)
-   [:head
-    [:meta {:charset "utf-8"}]
-    [:meta {:http-equiv "X-UA-Compatible" :content "IE=edge,chrome=1"}]
-    [:meta {:name "viewport" :content "width=device-width, initial-scale=1, maximum-scale=1"}]
-    [:title title]
-    (include-css "/css/amazium.css")
-    (include-css "/css/layout.css")
-    (include-css "/css/formalize.css")
-    (include-css "/css/forms.css")
-    (include-css "/css/jquery.dataTables.css")
-    (include-css "/css/login.css")
-    (include-js "/scripts/jquery-1.7.2.min.js")
-    (include-js "/scripts/jquery-ui-1.8.13.custom.min.js")
-    (include-js "/scripts/jquery.dataTables.min.js")
-    (include-js "/scripts/jquery.formalize.min.js")]
-   [:body
-    [:script {:type "text/javascript"} "var CLOSURE_NO_DEPS = true;"]
-    (include-js "/scripts/notify-me.js")
-    ;;header
-    [:div {:class "row header"}
-     (header title)]
-    [:div {:class "row content"}
-     [:div {:class "grid_2"} (menu selection)]
-     [:div {:class "grid_10"}
-      [:h2 {:class "container"} title]
-      [:div {:id "content" :class "container"} content]]]
-    [:div {:class "row footer"}
-     (footer)]]))
+  (-> (response/response (html
+                          (doctype :html5)
+                          [:head
+                           [:meta {:charset "utf-8"}]
+                           [:meta {:http-equiv "X-UA-Compatible" :content "IE=edge,chrome=1"}]
+                           [:meta {:name "viewport" :content "width=device-width, initial-scale=1, maximum-scale=1"}]
+                           [:title title]
+                           (include-css "/css/amazium.css")
+                           (include-css "/css/layout.css")
+                           (include-css "/css/formalize.css")
+                           (include-css "/css/forms.css")
+                           (include-css "/css/jquery.dataTables.css")
+                           (include-css "/css/login.css")
+                           (include-js "/scripts/jquery-1.7.2.min.js")
+                           (include-js "/scripts/jquery-ui-1.8.13.custom.min.js")
+                           (include-js "/scripts/jquery.dataTables.min.js")
+                           (include-js "/scripts/jquery.formalize.min.js")]
+                          [:body
+                           [:script {:type "text/javascript"} "var CLOSURE_NO_DEPS = true;"]
+                           (include-js "/scripts/notify-me.js")
+                           ;;header
+                           [:div {:class "row header"}
+                            (header title)]
+                           [:div {:class "row content"}
+                            [:div {:class "grid_2"} (menu selection)]
+                            [:div {:class "grid_10"}
+                             [:h2 {:class "container"} title]
+                             [:div {:id "content" :class "container"} content]]]
+                           [:div {:class "row footer"}
+                            (footer)]]))
+      (response/header "Cache-Control" "no-store, no-cache, must-revalidate")
+      (response/header "Pragma" "no-cache")
+      (response/header "Expires" "-1")))
 
 (defn four-oh-four []
   "Page not found")
