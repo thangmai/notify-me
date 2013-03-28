@@ -1,4 +1,5 @@
-(ns notify-me.models.validation.core)
+(ns notify-me.models.validation.core
+  (:require [notify-me.utils :as utils]))
 
 (def ^{:dynamic true} *is-unique?* (fn [value id] false))
 (def ^{:dynamic true} *default-messages* {:unique "Value %s is aready taken, please choose another one"
@@ -7,7 +8,9 @@
                                           :max-length "Field is longer than required"
                                           :range "Field value %s is not in range"
                                           :email "Field must be a valid email address"
-                                          :matches "Fields do not match"})
+                                          :matches "Fields do not match"
+                                          :regex "Field is not valid"
+                                          :digits "Field must be a number"})
 (defmulti valid-field? :type)
 
 (defmethod valid-field? :default
@@ -26,11 +29,16 @@
   ;TODO: uniqueness function should be field-name based
   (*is-unique?* value (:id form-values)))
 
+(defmethod valid-field? :digits
+  [{value :value}]
+  (and value (re-matches #"\d+" value)))
+
 (defmethod valid-field? :range
   [{value :value r :rule}]
-  (let [length (count value)]
-    (and (>= (count value) (r 0))
-         (<= (count value) (r 1)))))
+  (when (and (> (count value) 0) (re-matches #"\d+" value)) 
+    (let [nval (utils/str->int value)]
+      (and (>= nval (r 0))
+           (<= nval (r 1))))))
 
 (defmethod valid-field? :max-length
   [{value :value max :rule}]
@@ -39,6 +47,10 @@
 (defmethod valid-field? :matches
   [{value :value match :rule form-values :form-values}]
   (=  value (get form-values match)))
+
+(defmethod valid-field? :regex
+  [{value :value re :rule}]
+  (and value (re-matches re value)))
 
 (defmethod valid-field? :min-length
   [{value :value min :rule}]
