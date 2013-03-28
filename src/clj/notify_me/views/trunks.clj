@@ -37,7 +37,13 @@
           (form/text-field action "capacity" (:capacity trunk)))
          (form/field
           (f/label "host" "Host")
-          (form/text-field action "host" (:host trunk))))
+          (form/text-field action "host" (:host trunk)))
+         (form/field
+          (f/label "user" "Usuario")
+          (form/text-field action "user" (:user trunk)))
+         (form/field
+          (f/label "password" "Password")
+          (form/text-field action "password" (:password trunk))))
    (form/input-button "save" "Guardar")
    (form/input-button "cancel" "Cancelar")])
 
