@@ -15,7 +15,7 @@
 
 (defmethod model/get-cause-name "SMS"
   [notification result]
-  (pr-str (:error result)))
+  (pr-str (or (:error result) :OK)))
 
 (defn save-result
   [notification recipient result]
