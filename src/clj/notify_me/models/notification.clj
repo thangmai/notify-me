@@ -9,7 +9,11 @@
   "TODO: expand group recipient, add address to table?"
   [nid rcpt]
   (let [recipient {:recipient_id (str->int (:id rcpt))
-                   :recipient_type (:type rcpt)}]
+                   :recipient_type (:type rcpt)
+                   :attempts 0
+                   :failed 0
+                   :connected 0
+                   :last_status "PENDING"}]
     (insert e/notification_recipient (values (assoc recipient :notification nid)))))
 
 (defn create!
