@@ -8,6 +8,10 @@
    [domina :as d]
    [cljs.reader :as reader]))
 
+(defn back
+  []
+  (.back js/history))
+
 (defn- submit-form
   [form-id]
   (.submit (js/$ (str "#" form-id " > form"))))
@@ -35,7 +39,8 @@
         promise (.ajax js/$ url (clj->js {:url url :type "POST" :data post-data :contentType "text"}))]
     (.then promise
            (fn [response, status, jqxhr]
-               (display-message "Guardado con exito" "notice-msg"))
+               (display-message "Guardado con exito" "notice-msg")
+               (back))
            (fn [e]
                (display-message "Ooops, there was an error, please try again later" "error-msg")))))
 
@@ -69,7 +74,3 @@
         error-list (str "<ul>" (clojure.string/join (map (fn [m] (str "<li>" m "</li>")) messages)) "</ul>")]
     (do
       (display-message error-list "error-msg"))))
-
-(defn back
-  []
-  (.back js/history))
