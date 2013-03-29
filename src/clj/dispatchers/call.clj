@@ -96,7 +96,7 @@
   "Loops until all contacts for a notification are reached or finally
    cancelled"
   [notification context]
-  (log/debug "Processing notification")
+  (print "Processing notification")
   (model/update-status! notification "RUNNING")
   (let [total-ports (get-available-ports notification)
         contact-list (-> (model/retrieve-rcpt notification)
@@ -132,8 +132,8 @@
   (let [trunk (model/get-trunk notification)] 
     (manager/with-config {:name (:host trunk)}
       (if-let [context (manager/login (:user trunk) (:password trunk) :with-events)]
-      (manager/with-connection context
-        (process notification context)
-        (manager/logout))
-      (log/error "Unable to login"))))
+        (manager/with-connection context
+          (process notification context)
+          (manager/logout))
+        (log/error "Unable to login"))))
   (log/info "Finishing dispatch for " (:id notification)))
