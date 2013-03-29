@@ -9,7 +9,8 @@
 
 (defn credential-fn
   [email]
-  (user/one {:email email}))
+  (when-let [u (user/one {:email email})]
+    (select-keys u [:username :email :password :roles :office_id :id :display_name])))
 
 (defn session-store-authorize [{:keys [uri request-method params session]}]
   (when (nil? (:cemerick.friend/identity session))

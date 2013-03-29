@@ -120,5 +120,8 @@
   (GET "/:id/attempts-chart" [id] (attempts-chart id))
   ;;status field from the newly created notification gets confused
   ;;with http status result and fails
-  (POST "/" request (dissoc (create! (read-string (slurp (:body request)))) :status)) 
+  (POST "/" request (let [response (create! (read-string (slurp (:body request))))]
+                      (if (:status response)
+                        (select-keys response [:id]) ;;status name is messing everything up
+                        response))) 
   (GET "/:id" [id] (show id)))
