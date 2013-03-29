@@ -12,11 +12,11 @@
                  [ring/ring-jetty-adapter "1.1.1"]
                  ;;database handler
                  [lobos "1.0.0-SNAPSHOT"]
-                 [korma "0.3.0-beta9"]
+                 [korma "0.3.0-RC4"]
                  [postgresql/postgresql "9.1-901.jdbc4"]
-                 [org.clojure/java.jdbc "0.1.1"]
+                 [org.clojure/java.jdbc "0.2.3"]
                  ;;client side, html/javascript
-                 [org.clojure/clojurescript "0.0-1572"]
+                 [org.clojure/clojurescript "0.0-1552"]
                  [domina "1.0.2-SNAPSHOT"]
                  [hiccup "1.0.2"]
                  [jayq "0.3.2"]
