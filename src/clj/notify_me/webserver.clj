@@ -8,5 +8,4 @@
 
 (defn start
   [opts]
-    (prn (str "Starting web server at http://localhost/" (:port config/opts)))
     (jetty/run-jetty routes/app {:join? true :port (:port config/opts)}))

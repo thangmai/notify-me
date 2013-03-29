@@ -25,6 +25,8 @@
                  (or (and has-chance? "FAILED") "CANCELLED")
                  "CONNECTED")
         cause (model/get-cause-name notification result)]
+    (log/info (format "Saving result %s for contact %s on notification %s")
+              status (pr-str recipient) (:id notification))
     (model/save-delivery recipient notification status cause)
     ;;so far update-group-results is not called since there is no group expansion
     (model/update-contact-result notification recipient (:type recipient) status)
@@ -32,6 +34,7 @@
 
 (defn- send-direct-sms
   [notification contact]
+  (log/info "Sending message to number " (:address contact) " from notification " (:id notification))
   (let [number (:address contact)
         message (:message notification)
         result (sms-to-number *driver* number message)]
@@ -39,19 +42,17 @@
 
 (defn- send-group-sms
   [notification group-rcpt]
-  (println "Sending message to group")
+  (log/info "Sending message to group " (:recipient_id group-rcpt) " from notification " (:id notification))
   (let [group-id (:recipient_id group-rcpt)
         group-name (:name (group-model/one {:id group-id}))
         message (:message notification)
-        result (sms-to-group *driver* group-name message)
-        _ (println result)]
+        result (sms-to-group *driver* group-name message)]
     (save-result notification {:address group-name :id group-id :type "G"} result)))
 
 (defn process
   "Main notification loop"
   [notification]
-  (println "Processing notification")
-  (log/debug "Processing SMS notification")
+  (log/info "Processing SMS notification " (:id notification))
   (let [recipients (model/retrieve-rcpt notification)
         contact-rcpts (model/direct-contacts notification)
         group-rcpts (filter #(= "G" (:recipient_type %)) recipients)]

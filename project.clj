@@ -37,7 +37,8 @@
                  ;;testing
                  [midje "1.4.0"]
                  ;;logging
-                 [org.clojure/tools.logging "0.2.3"]
+                 [org.clojure/tools.logging "0.2.6"]
+                 [org.slf4j/slf4j-log4j12 "1.6.4"]
                  [clj-logging-config "1.9.10"]]
   :source-paths ["src/clj"]
   :hooks [leiningen.cljsbuild]

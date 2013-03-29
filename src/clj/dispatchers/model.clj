@@ -204,6 +204,7 @@
         status (if (not (normal-clearing? notification result)) 
                  (or (and has_chance? (get-cause-name notification result)) "CANCELLED")
                  "CONNECTED")]
+    (log/info (format "Saving result %s for contact %s on notification %s" status (:address contact) (:id notification)))
     (save-delivery contact notification status (:Cause result))
     (when (> (count (:groups contact)) 0)
       (doall (map #(update-group-results % notification) (:groups contact))))

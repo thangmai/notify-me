@@ -108,9 +108,9 @@
                                    (:cell_phone contact)
                                    (:name group))))
      (catch :type e
-       (println e))
+       (log/error e))
      (catch Object _
-       (println (:throwable &throw-context))))
+       (log/error (:throwable &throw-context))))
     group))
 
 (defn- unregister-group

@@ -22,7 +22,6 @@
 
 (defn update!
   [conditions attributes]
-  (println (str "Updating group " attributes " on condition " conditions))
   (let [group (select-keys attributes [:name :description :type])
         members (:members attributes)]
     (transaction

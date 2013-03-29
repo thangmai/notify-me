@@ -10,12 +10,12 @@
 ;; release the channel
 (defmethod events/handle-event "Hangup"
   [event context]
-  (println event)
+  (log/debug "Hangup event received: " (pr-str event))
   (manager/with-connection context
     (let [unique-id (:Uniqueid event)
           call-id (manager/get-user-data unique-id)
           prom (manager/get-user-data call-id)]
-      (println (format "Hanging up call %s with unique id %s" call-id unique-id))
+      (log/info (format "Hanging up call %s with unique id %s" call-id unique-id))
       (deliver prom event)
       (manager/remove-user-data! call-id) ;;FIX: this should be done
       ;;on the waiting side or promise may get lost
@@ -34,7 +34,7 @@
   [event context]
   (when (= (:Variable event) "CALLID")
     (manager/with-connection context
-      (println (format "Setting data %s match %s" (:Uniqueid event) (:Value event)))
+      (log/debug (format "Setting data %s match %s" (:Uniqueid event) (:Value event)))
       (manager/set-user-data! (:Uniqueid event) (:Value event)))))
 
 (defmethod events/handle-event :default
@@ -56,7 +56,7 @@
   "Call a contact and wait till the call ends.
    Function returns the hangup event or nil if timedout"
   [context notification contact]
-  (println "Dialing contact " contact)
+  (log/info "Dialing contact " (:address contact) " for notification " (:id notification))
   (manager/with-connection context
     (let [trunk (model/get-trunk notification)
           call-id (.toString (java.util.UUID/randomUUID))
@@ -96,7 +96,7 @@
   "Loops until all contacts for a notification are reached or finally
    cancelled"
   [notification context]
-  (print "Processing notification")
+  (log/info "Processing CALL notification " (:id notification))
   (model/update-status! notification "RUNNING")
   (let [total-ports (get-available-ports notification)
         contact-list (-> (model/retrieve-rcpt notification)
@@ -119,7 +119,7 @@
                      free-ports (- total-ports (count pending))
                      contacts (take free-ports remaining)
                      dialing (dispatch-calls context notification contacts)]
-                 (println (format "Pending %s Finished %s Failed %s Free Ports %s Dispatched %s"
+                 (log/debug (format "Pending %s Finished %s Failed %s Free Ports %s Dispatched %s"
                                   (count pending) (count finished) (count failed) free-ports
                                   (count dialing)))
                  (Thread/sleep 1000)
@@ -130,10 +130,11 @@
 (defmethod dispatcher/dispatch "CALL"
   [notification]
   (let [trunk (model/get-trunk notification)] 
+    (log/info (format "Notification %s, connecting to asterisk at %s" (:id notification) (:host trunk)))
     (manager/with-config {:name (:host trunk)}
       (if-let [context (manager/login (:user trunk) (:password trunk) :with-events)]
         (manager/with-connection context
           (process notification context)
           (manager/logout))
-        (log/error "Unable to login"))))
+        (log/error (format "Unable to login to host %s for notification %s" (:host trunk) (:id notification))))))
   (log/info "Finishing dispatch for " (:id notification)))

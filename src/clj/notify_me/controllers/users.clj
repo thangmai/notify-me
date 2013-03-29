@@ -57,7 +57,7 @@
 
 (defn create-new!
   [params]
-  (println params))
+  (comment (println params)))
 
 (defn create!
   "Creates a new user, all users are created as standard users, no admins"

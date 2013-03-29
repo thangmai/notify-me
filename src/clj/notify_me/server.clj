@@ -3,10 +3,12 @@
    [notify-me.webserver :as webserver]
    [clojurewerkz.quartzite.scheduler :as qs]
    [notify-me.jobs.notifier :as notifier]
-   [clj-logging-config.log4j :as log-config]))
+   [clj-logging-config.log4j :as log-config]
+   [clojure.tools.logging :as log]))
 
 (defn -main
   []
+  (log/info "Starting")
   (qs/initialize)
   (qs/start)
   (qs/unschedule-job (notifier/id))
