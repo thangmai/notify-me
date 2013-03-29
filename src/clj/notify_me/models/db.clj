@@ -1,5 +1,6 @@
 (ns notify-me.models.db
-  (:use korma.db))
+  (:use korma.db
+        notify-me.config))
 
 ;; TODO figure out how to put this config in lein and read it from
 ;; there
@@ -17,9 +18,8 @@
                   (format "//%s:%s%s" (.getHost db-uri) (.getPort db-uri) (.getPath db-uri)))})
     (postgres
      {:db "notify-me"
-      :user "guille"
-      :password "bogan731"
-      ;;OPTIONAL KEYS
-      :host "localhost"})))
+      :user (:user opts)
+      :password (:password opts)
+      :host (:host opts)})))
 
 (defdb db db-config)

@@ -1,18 +1,19 @@
 (ns dispatchers.model
   (:require [clojure.java.jdbc :as sql]
+            [notify-me.models.db :as db]
             [notify-me.models.trunk :as trunk]
             [notify-me.models.policy :as delivery-policies]
             [notify-me.models.notification :as notification-model]
             [clojure.tools.logging :as log])
   (:use [slingshot.slingshot :only [try+ throw+]]))
 
-(def ^:dynamic *database-url* "postgresql://localhost/notify-me?user=guille&password=bogan731")
+(def ^:dynamic *database-config* db/db-config)
 
 (defn retrieve-rcpt
   "Retrieves the pending list of recipients for a notification
    and flags them as being processed"
   [notification]
-  (sql/with-connection *database-url*
+  (sql/with-connection *database-config*
     (sql/with-query-results results
       [(format "UPDATE notification_recipient
                 SET last_status = 'PROCESSING'
@@ -82,7 +83,7 @@
 (defn direct-contacts
   "Return notification direct contacts with addresses expanded"
   [notification]
-  (sql/with-connection *database-url*
+  (sql/with-connection *database-config*
     (contact-rcpt notification)))
 
 (defn expand-rcpt
@@ -91,7 +92,7 @@
     only once).
    Each contact is returned with the original recipient id and type"
   [recipients notification]
-  (sql/with-connection *database-url*
+  (sql/with-connection *database-config*
     (let [direct-contacts (contact-rcpt notification) ;;no expansion needed
           group-rcpts (filter #(= "G" (:recipient_type %)) recipients)
           group-contacts (apply concat (map #(group-rcpt % notification) group-rcpts))
@@ -104,7 +105,7 @@
      (save-delivery contact notification result cause "C"))
   ([recipient notification result cause recipient_type]
      (log/debug "Saving delivery recipient:" recipient " result:" result " cause:" cause)
-     (sql/with-connection *database-url*
+     (sql/with-connection *database-config*
        (sql/insert-values :message_delivery
                           [:notification :recipient_id :recipient_type :delivery_address :status :cause]
                           [(:id notification) (:id recipient) recipient_type (:address recipient) result cause]))))
@@ -113,7 +114,7 @@
   "Counts how many attempts for each type a contact has on a given
    notification"
   [contact notification policies]
-  (sql/with-connection *database-url*
+  (sql/with-connection *database-config*
     (let [attempts (first (sql/with-query-results results
                             [(format "SELECT count(case when status='BUSY' then 1 else null end) as busy,
                                              count(case when status='NO ANSWER' then 1 else null end) as no_answer,
@@ -136,7 +137,7 @@
    When no more contacts are left to be reached for this group it's flagged as finished"
   [group-id notification]
   (when group-id
-    (sql/with-connection *database-url*
+    (sql/with-connection *database-config*
       (let [remaining (first (group-rcpt {:recipient_id group-id} notification))
             last_status (if remaining "PROCESSING" "FINISHED")]
         (sql/with-query-results results
@@ -158,7 +159,7 @@
                     WHERE notification_recipient.notification = '%s' AND
                           notification_recipient.recipient_id = '%s' AND
                           notification_recipient.recipient_type = 'G'
-                    RETURNING *"
+                    RETURNING NULL"
                    last_status (:id notification) group-id (:id notification) group-id)])))))
 
 ;;TODO update counters!
@@ -170,7 +171,7 @@
   ([contact notification status]
      (update-contact-result notification contact "C" status))
   ([notification recipient recipient_type status]
-     (sql/with-connection *database-url*
+     (sql/with-connection *database-config*
        (sql/update-values :notification_recipient
                           ["notification=? AND recipient_id=? AND recipient_type=?"
                            (:id notification) (:id recipient) recipient_type]
