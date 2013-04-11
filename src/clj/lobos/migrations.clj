@@ -70,7 +70,7 @@
   (up []
       (create
        (tbl :delivery_policy
-            (varchar :name 50 :unique)
+            (varchar :name 50)
             (integer :retries_on_error (default 3))
             (integer :busy_interval_secs (default 60))
             (integer :retries_on_busy (default 5))
