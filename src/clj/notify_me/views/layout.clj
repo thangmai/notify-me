@@ -84,6 +84,7 @@
                             (footer)]]))
       (response/header "Cache-Control" "no-store, no-cache, must-revalidate")
       (response/header "Pragma" "no-cache")
+      (response/header "Content-Type" "text/html; charset=utf-8")
       (response/header "Expires" "-1")))
 
 (defn four-oh-four []
