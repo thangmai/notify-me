@@ -1,4 +1,4 @@
 #!/bin/bash
-
-exec chpst -unotifyme /opt/notify-me/run.sh
+exec 2>&1
+exec chpst -u notifyme /opt/notify-me/run.sh
 

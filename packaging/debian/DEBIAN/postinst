@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-NOTIFY_ME_HOME=/var/lib/notifyme
+NOTIFY_ME_HOME=/var/lib/notify-me
 
 adduser notifyme --home $NOTIFY_ME_HOME --group --system --quiet || exit 1
 
@@ -9,7 +9,7 @@ chown -R notifyme:notifyme /var/lib/notify-me
 chmod -R 775  /var/lib/notify-me
 
 mkdir -p /var/log/notify-me
-chown -R notifyme:notifyme /var/log/notifyme
+chown -R notifyme:notifyme /var/log/notify-me
 chmod -R 775  /var/log/notify-me
 
 if [ ! -d /etc/service/notify-me ]
