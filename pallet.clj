@@ -23,6 +23,15 @@
 (require '[pallet.crate.service
            :refer [supervisor-config supervisor-config-map] :as service])
 
+(defn postgres-user 
+  []
+  (actions/group "postgres")
+  (actions/user "postgres" 
+                :action :create
+                :shell false
+                :group "postgres"
+                :system true))
+
 (defproject notify-me
  
   :phases {:configure (plan-fn
@@ -39,26 +48,21 @@
                        (pallet.actions/exec-script (sed-file "/root/file-destino" "s/INFO/WARN/" {}))
                        (pallet.actions/exec-script (ls "/root")))}
 
-;;java -cp target/notify-me-0.4.0-SNAPSHOT-standalone.jar clojure.main -e "(require 'notify-me.server)(in-ns 'notify-me.server)(-main)"
-
-  :groups [(group-spec "asterisk" 
+  :groups [(group-spec "notify-me"
                        :extends [(git {})
-                                 (runit/server-spec {} {:instance-id "notify-me" 
-                                                        :jobs [{:run-file ""
-                                                                :log-run-file ""}]})
+                                 (runit/server-spec {})
                                  (postgres/server-spec {:version "9.1"
                                                         :strategy :packages})
                                  (java/server-spec {:vendor :sun
                                                     :version [7]})]
-                       :phases {:test2 (plan-fn
-                                            (actions/group "postgres")
-                                            (actions/user "postgres" 
-                                                          :action :create
-                                                          :shell false
-                                                          :group "postgres"
-                                                          :system true
-                                                          ))
-                                :test (plan-fn
+                       :phases {:configure (plan-fn
+                                            (postgres-user)
+                                            (package "curl")
+                                            (package "sudo"))})
+
+           (group-spec "asterisk" 
+                       :extends [(git {})]
+                       :phases {:test (plan-fn
                                        (pallet.actions/exec-script (cp "/root/file-destino" "/root/file-destino2"))
                                        (pallet.actions/exec-script (sed-file "/root/file-destino" "s/INFO/WARN/" {})))})]
 
