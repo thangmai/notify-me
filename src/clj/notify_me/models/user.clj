@@ -8,10 +8,7 @@
 
 (defn create!
   [attributes]
-  ;; not sure why insert returns serialized roles
-  (deserialize
-   (insert e/user (values attributes))
-   :roles))
+  (insert e/user (values attributes)))
 
 (defn update!
   [conditions attributes]
