@@ -64,7 +64,7 @@
   [notification]
   (if notification
     (:name notification)
-    "Nueva Notificacion")) 
+    "Nueva Notificación")) 
 
 
 (def notification-icons
