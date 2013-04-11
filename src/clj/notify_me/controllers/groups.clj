@@ -1,8 +1,10 @@
 (ns notify-me.controllers.groups
+  (:refer-clojure :exclude [read-string])
   (:require
    [notify-me.models.group :as model]
    [notify-me.models.contact :as contact]
    [notify-me.views.groups :as view]
+   [clojure.edn :refer [read-string]]
    [ring.util.response :as res]
    [cemerick.friend :as friend]
    [cemerick.friend.workflows :as workflows]

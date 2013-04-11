@@ -1,9 +1,11 @@
 (ns notify-me.controllers.policies
+  (:refer-clojure :exclude [read-string])
   (:require
    [notify-me.models.policy :as model]
    [notify-me.views.policies :as view]
    [ring.util.response :as res]
    [cemerick.friend :as friend]
+   [clojure.edn :refer [read-string]]
    [cemerick.friend.workflows :as workflows]
    [notify-me.models.validation.policy :as policy-rules])
   (:use

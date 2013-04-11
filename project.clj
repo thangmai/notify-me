@@ -5,7 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :plugins [[lein-cljsbuild "0.2.10"]
             [lein-midje "2.0.1"]]
-  :dependencies [[org.clojure/clojure "1.4.0"]
+  :dependencies [[org.clojure/clojure "1.5.1"]
                  [slingshot "0.10.3"]
                  ;;web server
                  [compojure "1.1.3"]

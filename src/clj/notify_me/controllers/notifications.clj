@@ -1,4 +1,5 @@
 (ns notify-me.controllers.notifications
+  (:refer-clojure :exclude [read-string])
   (:require
    [notify-me.models.notification :as model]
    [notify-me.models.policy :as policy]
@@ -6,6 +7,7 @@
    [notify-me.models.group :as group]
    [notify-me.models.trunk :as trunk]
    [notify-me.views.notifications :as view]
+   [clojure.edn :refer [read-string]]
    [incanter core stats charts]
    [ring.util.response :as res]
    [cemerick.friend :as friend]

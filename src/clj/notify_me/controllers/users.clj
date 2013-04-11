@@ -1,8 +1,10 @@
 (ns notify-me.controllers.users
+  (:refer-clojure :exclude [read-string])
   (:require
    [notify-me.models.user :as model]
    [notify-me.views.users :as view]
    [ring.util.response :as res]
+   [clojure.edn :refer [read-string]]
    [cemerick.friend :as friend]
    [cemerick.friend.workflows :as workflows]
    [notify-me.models.validation.user :as user-rules])

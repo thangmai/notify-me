@@ -1,4 +1,5 @@
 (ns notify-me.controllers.offices
+  (:refer-clojure :exclude [read-string])
   (:use
    [compojure.core :only [defroutes GET POST]]
    [notify-me.utils]
@@ -6,6 +7,7 @@
   (:require
    [clojure.string :as str]
    [ring.util.response :as ring]
+   [clojure.edn :refer [read-string]]
    [notify-me.models.office :as office-model]
    [notify-me.models.user :as user-model]
    [notify-me.models.policy :as policy-model]

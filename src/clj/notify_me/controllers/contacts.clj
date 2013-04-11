@@ -1,9 +1,11 @@
 (ns notify-me.controllers.contacts
+  (:refer-clojure :exclude [read-string])
   (:require
    [notify-me.models.contact :as model]
    [notify-me.views.contacts :as view]
    [ring.util.response :as res]
    [cemerick.friend :as friend]
+   [clojure.edn :refer [read-string]]
    [cemerick.friend.workflows :as workflows]
    [notify-me.models.validation.contact :as contact-rules])
   (:use

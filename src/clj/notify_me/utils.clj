@@ -1,4 +1,6 @@
-(ns notify-me.utils)
+(ns notify-me.utils
+  (:refer-clojure :exclude [read-string])
+  (:use [clojure.edn :refer [read-string]]))
 
 (defn str->int
   ([str]
