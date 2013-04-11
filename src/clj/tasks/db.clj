@@ -1,4 +1,5 @@
 (ns tasks.db
+  (:gen-class)
   (:refer-clojure :exclude [alter drop complement
                             bigint boolean char double float time])
   (:require [notify-me.models.user :as user]
@@ -16,10 +17,10 @@
   []
   (println "Creating root user")
   (user/create! {:username     "admin"
-                 :email        "guillermo.winkler@gmail.com"
+                 :email        "admin@presidencia.gub.uy"
                  :display_name "admin"
                  :password     "sinclave"
-                 :roles "[:admin]"})
+                 :roles [:admin]})
   (println "Creating Ancel SMS provider")
   (sms_provider/create! {:name "Ancel SMS Empresa"
                          :provider "Ancel.SMSEmpresa"}))

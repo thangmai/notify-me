@@ -1,4 +1,5 @@
 (ns notify-me.server
+  (:gen-class)
   (:require
    [notify-me.webserver :as webserver]
    [clojurewerkz.quartzite.scheduler :as qs]
@@ -7,7 +8,7 @@
    [clojure.tools.logging :as log]))
 
 (defn -main
-  []
+  [& args]
   (log/info "Starting")
   (qs/initialize)
   (qs/start)
