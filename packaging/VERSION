@@ -1,0 +1,27 @@
+
+PAQNAME=notify-me
+SOFTWARE=0.4.0
+
+[ -z "$PACKAGE"  ] && PACKAGE=0000
+
+if [ `uname -m` = "x86_64" ]
+then 
+  ARCHITECTURE="amd64"
+else
+  echo "$(uname -m) is not a supported architecture"
+  exit 1
+fi
+
+
+FULL_VERSION=${SOFTWARE}-${PACKAGE}
+FSNAME=${PAQNAME}_${FULL_VERSION}_$ARCHITECTURE.deb
+
+echo "##################################################"
+echo
+echo "PAQNAME: 		$PAQNAME"
+echo "PACKAGE: 		$PACKAGE"
+echo "FULL VERSION: 	$FULL_VERSION"
+echo "FSNAME: 		$FSNAME"
+echo
+echo "##################################################"
+

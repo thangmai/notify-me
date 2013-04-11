@@ -1,0 +1,9 @@
+Package: notify-me
+Version: FULL_VERSION
+Section: services
+Priority: required
+Depends: runit
+Architecture: ARCHITECTURE
+Maintainer: Guillermo Winkler <guilespi@intception.com>
+Description: Notify Me
+ Sms and Call Blaster Solution

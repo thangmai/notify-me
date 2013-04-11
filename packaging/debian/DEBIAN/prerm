@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "remove" ]
+then
+  sv -w 45 force-shutdown notify-me
+  sleep 5
+  /usr/sbin/update-service --remove /etc/notify-me/sv/notify-me
+fi
+
+if [ "$1" = "purge" ]
+then
+  sv -w 45 force-shutdown notify-me
+  sleep 5
+  /usr/sbin/update-service --remove /etc/notify-me/sv/notify-me
+fi
+
+if [ "$1" = "upgrade"  ]
+then
+  sv -w 45 force-stop notify-me
+fi

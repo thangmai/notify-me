@@ -1,4 +1,4 @@
-(defproject notify-me "0.1.0-SNAPSHOT"
+(defproject notify-me "0.4.0-SNAPSHOT"
   :description "Notify-Me Web App"
   :url "http://notifyme.com"
   :license {:name "Eclipse Public License"
@@ -43,6 +43,12 @@
   :source-paths ["src/clj"]
   :hooks [leiningen.cljsbuild]
   :main notify-me.server
+  :profiles {:pallet {:source-paths ["pallet/src"] :resource-paths []
+                      :dependencies [[com.palletops/pallet "0.8.0-beta.7"]
+                                     [com.palletops/java-crate "0.8.0-beta.2"]
+                                     [com.palletops/git-crate "0.8.0-alpha.1"]
+                                     [com.palletops/postgres-crate "0.8.0-314-SNAPSHOT"]
+                                     [com.palletops/runit-crate "0.8.0-alpha.1"]]}}
   :cljsbuild {
               :crossovers [notify-me.models.validation]
               :crossover-path "crossover-cljs"
