@@ -43,7 +43,7 @@
 (defn display-offices
   [offices]
   (layout/create-entity-table "entity-table"
-                              [[:name "Nombre"] [:description "Descripcion"]]
+                              [[:name "Nombre"] [:description "Descripción"]]
                               offices
                               [["/offices/%s/edit" "Editar"]
                                ["/offices/%s/delete" "Borrar"]]))

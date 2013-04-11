@@ -9,7 +9,7 @@
 (defn- create-contact-table
   [id contacts]
   [:table {:id id}
-   [:thead [:tr [:th "Id"] [:th "Nombre"] [:th "Telefono"] [:th "Tipo"]]]
+   [:thead [:tr [:th "Id"] [:th "Nombre"] [:th "Teléfono"] [:th "Tipo"]]]
    [:tbody
     (map (fn [contact]
           [:tr
@@ -28,13 +28,8 @@
           (f/label "name" "Nombre")
           (form/text-field action "name" (:name group)))
          (form/field
-          (f/label "description" "Descripcion")
-          (form/text-field action "description" (:description group)))
-         (form/field
-          (f/label "type" "Sincronizar")
-          (f/check-box "type" (:type group) "Sincronizar con Ancel"))
-         
-         )
+          (f/label "description" "Descripción")
+          (form/text-field action "description" (:description group))))
    [:div {:id "contacts"}
     [:div {:class "contact-table"}
      [:h4 "Contactos Disponibles"]
@@ -51,7 +46,7 @@
   [groups]
   (layout/create-entity-table "entity-table"
                               [[:name "Nombre"]
-                               [:description "Descripcion"]
+                               [:description "Descripción"]
                                [:type "Tipo"]]
                               groups
                               [["/groups/%s/edit" "Editar"]

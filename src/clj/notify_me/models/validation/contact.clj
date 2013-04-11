@@ -11,7 +11,7 @@
                                :unique true
                                :regex #"^(099|091|098)(\d{6})$"
                                :max-length 20}
-                 :messages {:required "El telefono es requerido."
-                            :unique "El telefono %s ya esta en uso en otro contacto."
-                            :max-length "El largo del telefono no puede superar los 20 caracteres"
-                            :regex "Solamente telefonos de ancel son permitidos, comenzando con 099, 098 y 091"}}})
+                 :messages {:required "El teléfono es requerido."
+                            :unique "El teléfono %s ya esta en uso en otro contacto."
+                            :max-length "El largo del teléfono no puede superar los 20 caracteres"
+                            :regex "Solamente teléfonos de ancel son permitidos, comenzando con 099, 098 y 091"}}})

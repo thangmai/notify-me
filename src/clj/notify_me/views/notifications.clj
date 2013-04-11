@@ -90,7 +90,7 @@
   [notifications]
   (layout/common :notifications
                  "Notificaciones"
-                 (layout/button-new "Nueva Notificacion" "/notifications/new")
+                 (layout/button-new "Nueva Notificación" "/notifications/new")
                  (display-notifications notifications)))
 
 (defn- recipient-table
@@ -109,7 +109,7 @@
 (defn- attempts-table
   [attempts]
   [:table {:id "attempts"}
-   [:thead [:tr [:th "Nombre"] [:th "Estado"] [:th "Fecha"] [:th "Direccion"] [:th "Causa"]]]
+   [:thead [:tr [:th "Nombre"] [:th "Estado"] [:th "Fecha"] [:th "Dirección"] [:th "Causa"]]]
    [:tbody
     (map (fn [a]
            [:tr

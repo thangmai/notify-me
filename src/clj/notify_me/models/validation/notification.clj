@@ -2,8 +2,8 @@
 
 (def rules
   {:type  {:validations { :required true }
-           :messages { :required "Debe seleccionar algun mecanismo de despacho, sms, llamada, o ambos."}}
+           :messages { :required "Debe seleccionar algún mecanismo de despacho, sms, llamada, o ambos."}}
    :message  {:validations { :required true}
-              :messages { :required "El mensaje a enviar es requerido, por favor ingreselo."}}
+              :messages { :required "El mensaje a enviar es requerido, por favor ingréselo."}}
    :members {:validations { :required true}
-             :messages{:required "Debe seleccionar algun destinatario de la notificacion"}}})
+             :messages{:required "Debe seleccionar algún destinatario de la notificación"}}})

@@ -18,8 +18,8 @@
                             :min-length 5
                             :max-length 255}
               :messages {:required "La clave es requerida"
-                         :min-length "El largo minimo de la clave son 5 caracteres"
-                         :max-length "El largo maximo de la clave son 255 caracteres"}}
+                         :min-length "El largo mínimo de la clave son 5 caracteres"
+                         :max-length "El largo máximo de la clave son 255 caracteres"}}
    :password-match {:validations {:required true
                                   :matches :password}
                     :messages {:required "Debe reingresar la clave"

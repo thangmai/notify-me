@@ -48,14 +48,14 @@
 (defn index
   [policies]
   (layout/common :policies
-                 "Politicas de Despacho"
-                 (layout/button-new "Nueva Politica" "/policies/new")
+                 "Políticas de Despacho"
+                 (layout/button-new "Nueva Política" "/policies/new")
                  (display-policies policies)))
 
 
 (defn- get-title
   [action policy]
-  (get {:new "Nuevas Politicas de Despacho"
+  (get {:new "Nuevas Políticas de Despacho"
         :edit (:name policy)} action))
 
 (defn render-form

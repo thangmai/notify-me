@@ -15,10 +15,10 @@
           (f/label "name" "Nombre")
           (form/text-field action "name" (:name trunk)))
          (form/field
-          (f/label "technology" "Tecnologia")
+          (f/label "technology" "Tecnología")
           (f/drop-down "technology" [["SIP" "SIP"]] (:technology trunk)))
          (form/field
-          (f/label "number" "Numero")
+          (f/label "number" "Número")
           (form/text-field action "number" (:number trunk)))
          (form/field
           (f/label "context" "Contexto")
@@ -27,13 +27,13 @@
           (f/label "priority" "Prioridad")
           (form/text-field action "priority" (:priority trunk)))
          (form/field
-          (f/label "extension" "Extension")
+          (f/label "extension" "Extensión")
           (form/text-field action "extension" (:extension trunk)))
          (form/field
           (f/label "callerid" "Caller ID")
           (form/text-field action "callerid" (:callerid trunk)))
          (form/field
-          (f/label "capacity" "Lineas Disponibles")
+          (f/label "capacity" "Líneas Disponibles")
           (form/text-field action "capacity" (:capacity trunk)))
          (form/field
           (f/label "host" "Host")
@@ -52,9 +52,9 @@
   (layout/create-entity-table "entity-table"
                               [[:host "Host"]
                                [:name "Nombre"]
-                               [:technology "Tecnologia"]
-                               [:number "Numero"]
-                               [:extension "Extension"]
+                               [:technology "Tecnología"]
+                               [:number "Número"]
+                               [:extension "Extensión"]
                                [:priority "Prioridad"]
                                [:callerid "Caller Id"]
                                [:capacity "Capacidad"]]
