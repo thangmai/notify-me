@@ -14,7 +14,7 @@
                  [lobos "1.0.0-SNAPSHOT"]
                  [korma "0.3.0-RC4"]
                  [postgresql/postgresql "9.1-901.jdbc4"]
-                 [org.clojure/java.jdbc "0.2.3"]
+                 [org.clojure/java.jdbc "0.3.0-alpha1"]
                  ;;client side, html/javascript
                  [org.clojure/clojurescript "0.0-1552"]
                  [domina "1.0.2-SNAPSHOT"]
