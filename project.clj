@@ -44,7 +44,7 @@
   :hooks [leiningen.cljsbuild]
   :main notify-me.server
   :profiles {:pallet {:source-paths ["pallet/src"] :resource-paths []
-                      :dependencies [[com.palletops/pallet "0.8.0-beta.7"]
+                      :dependencies [[com.palletops/pallet "0.8.0-SNAPSHOT"]
                                      [com.palletops/java-crate "0.8.0-beta.2"]
                                      [com.palletops/git-crate "0.8.0-alpha.1"]
                                      [com.palletops/postgres-crate "0.8.0-314-SNAPSHOT"]
