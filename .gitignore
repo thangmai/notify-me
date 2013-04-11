@@ -12,3 +12,4 @@ crossover-cljs/
 .lein-cljsbuild-compiler-0/
 /db/
 resources/public/scripts/notify-me.js
+/*.lein-repl-history

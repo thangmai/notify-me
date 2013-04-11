@@ -28,7 +28,7 @@ sed -i -e  "s/ARCHITECTURE/$ARCHITECTURE/" $PREFIX/$CONTROL
 
 cp target/$ARCHIVE $PREFIX/opt/notify-me/
 
-echo "java -jar $ARCHIVE" >> $PREFIX/opt/notify-me/run.sh
+echo "exec chpst -u notifyme java -jar $ARCHIVE" >> $PREFIX/etc/notify-me/sv/notify-me/run
 chmod a+x $PREFIX/opt/notify-me/run.sh
 
 cd $PREFIX
