@@ -5,6 +5,8 @@
 echo "FULL VERSION: $FULL_VERSION"
 echo "FSNAME:       $FSNAME"
 
+ROOT=`pwd`
+
 TARGET=target
 PREFIX=$TARGET/debian
 ARTIFACTS=$TARGET/artifacts
@@ -29,12 +31,16 @@ cp target/$ARCHIVE $PREFIX/opt/notify-me/
 echo "java -jar $ARCHIVE notify-me.server" >> $PREFIX/opt/notify-me/run.sh
 chmod a+x $PREFIX/opt/notify-me/run.sh
 
-tar czvf $PREFIX/data.tar.gz $PREFIX/etc $PREFIX/opt
-tar czvf $PREFIX/control.tar.gz $PREFIX/DEBIAN/*
-echo $SOFTWARE > $PREFIX/debian-binary
+cd $PREFIX
+tar czvf data.tar.gz etc opt
+cd $ROOT
+tar czvf $PREFIX/control.tar.gz -C $PREFIX/DEBIAN/ .
+echo 2.0 > $PREFIX/debian-binary
+
+cd $ROOT
 
 ar -r $TARGET/$FSNAME $PREFIX/debian-binary $PREFIX/data.tar.gz $PREFIX/control.tar.gz
-rm -fr $PREFIX
+#rm -fr $PREFIX
 
 #dpkg-deb --build $PREFIX $TARGET/$FSNAME
 
