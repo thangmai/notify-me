@@ -97,7 +97,8 @@
    cancelled"
   [notification context]
   (log/info "Processing CALL notification " (:id notification))
-  (model/update-status! notification "RUNNING")
+  (when (not (model/cancelling? notification))
+    (model/update-status! notification "RUNNING"))
   (let [total-ports (get-available-ports notification)
         contact-list (-> (model/retrieve-rcpt notification)
                          (model/expand-rcpt notification))]

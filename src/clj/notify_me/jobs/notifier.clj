@@ -16,7 +16,8 @@
 
 (defn pending-notifications
   []
-  (let [pending (notifications/search {:status "CREATED"})]
+  (let [pending (notifications/search (or (= :status "CREATED")
+                                          (= :status "CANCELLING")))]
     (doall (map start-notification pending))))
 
 (defjob Notifier

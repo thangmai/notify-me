@@ -25,8 +25,7 @@
                  (or (and has-chance? "FAILED") "CANCELLED")
                  "CONNECTED")
         cause (model/get-cause-name notification result)]
-    (log/info (format "Saving result %s for contact %s on notification %s")
-              status (pr-str recipient) (:id notification))
+    (log/info (format "Saving result %s for contact %s on notification %s" status (pr-str recipient) (:id notification)))
     (model/save-delivery recipient notification status cause)
     ;;so far update-group-results is not called since there is no group expansion
     (model/update-contact-result notification recipient (:type recipient) status)
@@ -58,7 +57,8 @@
         group-rcpts (filter #(= "G" (:recipient_type %)) recipients)]
     (loop [contacts contact-rcpts groups group-rcpts]
       (cond
-       (model/cancelling? notification) (model/update-status! notification "STOPPED")
+       (model/cancelling? notification) 
+           (model/update-status! notification "STOPPED")
        (or (seq contacts)
            (seq groups)) (let [failed-contacts (filter #(= (:status %) "FAILED")
                                                        (map #(send-direct-sms notification %) contact-rcpts))
@@ -69,8 +69,9 @@
 
 (defmethod dispatcher/dispatch "SMS"
   [notification]
-  (model/update-status! notification "RUNNING")
-  (binding [*driver* (sms-driver/load)]
-    (process notification))
+  (when (not (model/cancelling? notification))
+    (model/update-status! notification "RUNNING")
+    (binding [*driver* (sms-driver/load)]
+      (process notification)))
   (model/update-status! notification "FINISHED"))
 
