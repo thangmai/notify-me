@@ -42,7 +42,7 @@ After that the trunk may be used when creating a new notification.
 
 Now, SMS integration is done only with `Ancel SMS Empresa` using the [clj-ancel-sms][7] library.
 
-Extension is not only desirable but posible, since each sms provider is treated as a plugin complying with a dispatching protocol.
+Extension is not only desirable but possible, since each sms provider is treated as a plugin complying with a dispatching protocol.
 
 ## Docs
 
