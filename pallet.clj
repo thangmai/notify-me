@@ -55,11 +55,14 @@
                                                         :strategy :packages})
                                  (java/server-spec {:vendor :sun
                                                     :version [7]})]
-                       :phases {:configure (plan-fn
-                                            (postgres-user)
-                                            (package "curl")
-                                            (package "sudo"))})
-
+                       :phases {:pre-req (plan-fn
+                                          (package-manager :update)
+                                          (postgres-user)
+                                          (package "curl")
+                                          (package "sudo")
+                                          (package "sox")
+                                          (package "libsox-fmt-mp3"))})
+           
            (group-spec "asterisk" 
                        :extends [(git {})]
                        :phases {:test (plan-fn
