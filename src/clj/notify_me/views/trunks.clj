@@ -18,7 +18,7 @@
           (f/label "technology" "Tecnología")
           (f/drop-down "technology" [["SIP" "SIP"]] (:technology trunk)))
          (form/field
-          (f/label "number" "Número")
+          (f/label "number" "Peer de Salida")
           (form/text-field action "number" (:number trunk)))
          (form/field
           (f/label "context" "Contexto")
