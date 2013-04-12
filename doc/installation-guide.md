@@ -24,9 +24,9 @@ All the scripts for debian packaging are located in the `packaging` directory of
 
 Issue the command `./packaging/bin/paq.sh` in the project directory and it will create the `.deb` file.
 
-Depending on the version you're building you may end up with a file like this:
+Depending on the version you're building you may end up with a file like this in the project directory:
 
-`notify-me_0.4.0-0000_amd64.deb`
+`target/notify-me_0.4.0-0000_amd64.deb`
 
 ## Pallet
 
