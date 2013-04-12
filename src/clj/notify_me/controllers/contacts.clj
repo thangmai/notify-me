@@ -71,6 +71,11 @@
      params
      (fn [] (model/update! {:id (str->int id)} (dissoc params :id))))))
 
+(defn delete!
+  [id]
+  (when-let [contact (model/one {:id (str->int id)})]
+    (model/delete! contact)
+    (all)))
 
 (defroutes routes
   (GET "/" [] (all))
@@ -78,6 +83,7 @@
   (POST "/" request (create! (read-string (slurp (:body request)))))
   (GET "/:phone" [phone] (show phone))
   (GET "/:phone/edit" [phone] (edit phone))
+  (GET "/:phone/delete" [phone] (delete! phone))
   (GET "/:phone/unique" [phone] (pr-str (is-unique? phone)))
   (GET "/:id/:phone/unique" [id phone] (pr-str (is-unique? phone id)))
   (POST "/:id" request (update! (read-string (slurp (:body request))))))

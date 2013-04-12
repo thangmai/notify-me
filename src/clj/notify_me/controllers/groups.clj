@@ -85,6 +85,11 @@
         group (merge params {:office_id (current-office-id)})]
     (validate-and-save group (fn [] (model/update! {:id (str->int id)} group)))))
 
+(defn delete!
+  [id]
+  (when-let [group (model/one {:id (str->int id)})]
+    (model/delete! group)
+    (all)))
 
 (defroutes routes
   (GET "/" [] (all))
@@ -92,6 +97,7 @@
   (POST "/" request (create! (read-string (slurp (:body request)))))
   (GET "/:name" [name] (show name))
   (GET "/:name/edit" [name] (edit name))
+  (GET "/:name/delete" [name] (delete! name))
   (GET "/:name/unique" [name] (pr-str (is-unique? name)))
   (GET "/:id/:name/unique" [id name] (pr-str (is-unique? name id)))
   (POST "/:id" request (update! (read-string (slurp (:body request))))))

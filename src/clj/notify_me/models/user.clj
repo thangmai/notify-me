@@ -16,6 +16,11 @@
           (set-fields attributes)
           (where conditions)))
 
+(defn delete!
+  [user]
+  (delete e/user
+          (where {:id (:id user)})))
+
 (defn one
   [conditions]
   (first (select e/user

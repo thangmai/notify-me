@@ -80,12 +80,19 @@
             (let [u (if (:password params) user params)]
               (model/update! {:id (str->int id)} (dissoc u :id)))))))
 
+(defn delete!
+  [id]
+  (when-let [user (model/one {:id (str->int id)})]
+    (model/delete! user)
+    (all)))
+
 (defroutes routes
   (GET "/" [] (all))
   (GET "/new" [] (show-new))
   (POST "/" request (create! (read-string (slurp (:body request)))))
   (GET "/:username" [username] (show username))
   (GET "/:username/edit" [username] (edit username))
+  (GET "/:username/delete" [username] (delete! username))
   (GET "/:name/unique" [name] (pr-str (is-unique? name)))
   (GET "/:id/:name/unique" [id name] (pr-str (is-unique? name id)))
   (POST "/:id" request (update! (read-string (slurp (:body request))))))
