@@ -89,9 +89,9 @@
                               (limit 1)))]
     (assoc n :members (get-recipients n))))
 
-(defn search
+(defmacro search
   [conditions]
-  (select e/notification (where conditions)))
+  `(select e/notification (where ~conditions)))
 
 (defn delete!
   [notification]

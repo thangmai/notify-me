@@ -111,7 +111,11 @@
   (create-chart id model/attempts-summary :status :cnt))
 
 (defn- cancel-notification
-  [id])
+  [id]
+  (when-let [notification (model/one {:id id})]
+    (model/update! {:id (:id notification)}
+                   {:status "CANCELLING"})
+    (all)))
 
 (defroutes routes
   (GET "/" [] (all))
