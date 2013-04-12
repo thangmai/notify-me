@@ -13,7 +13,8 @@
    [notify-me.controllers.trunks :as trunks]
    [notify-me.controllers.notifications :as notifications]
    [notify-me.controllers.tts :as tts]
-   [notify-me.controllers.session :as session])
+   [notify-me.controllers.session :as session]
+   [notify-me.models.permissions :as permissions])
   (:use
      ring.middleware.params
      ring.middleware.keyword-params
@@ -26,18 +27,22 @@
 (defroutes routes
   ;;files
   (route/resources "/")
-  ;;landing
-  (GET "/" request (response/redirect "/notifications"))
+  
+  ;;landing, prioritize according to user role and permissions
+  (GET "/" request (let [actions (permissions/get-user-actions)] 
+                     (if (contains? actions :offices)
+                       (response/redirect "/offices")
+                       (response/redirect "/notifications"))))
   
   ;;controllers
   (context "/offices" request (friend/wrap-authorize offices/routes #{:admin}))
-  (context "/users" request (friend/wrap-authorize users/routes #{:user :admin}))
-  (context "/contacts" request (friend/wrap-authorize contacts/routes #{:user :admin}))
-  (context "/groups" request (friend/wrap-authorize groups/routes #{:user :admin}))
-  (context "/policies" request (friend/wrap-authorize policies/routes #{:user :admin}))
-  (context "/trunks" request (friend/wrap-authorize trunks/routes #{:user :admin}))
-  (context "/notifications" request (friend/wrap-authorize notifications/routes #{:user :admin}))
-  (context "/tts" request (friend/wrap-authorize tts/routes #{:user :admin}))
+  (context "/users" request (friend/wrap-authorize users/routes #{:user}))
+  (context "/contacts" request (friend/wrap-authorize contacts/routes #{:user}))
+  (context "/groups" request (friend/wrap-authorize groups/routes #{:user}))
+  (context "/policies" request (friend/wrap-authorize policies/routes #{:user}))
+  (context "/trunks" request (friend/wrap-authorize trunks/routes #{:user}))
+  (context "/notifications" request (friend/wrap-authorize notifications/routes #{:user}))
+  (context "/tts" request (friend/wrap-authorize tts/routes #{:user}))
   
   ;; auth
   (GET "/login" request session/show-new)
