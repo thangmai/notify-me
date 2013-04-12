@@ -91,7 +91,7 @@
 
 (defmacro search
   [conditions]
-  `(select e/notification (where ~conditions)))
+  `(select e/notification (where ~conditions) (order :created :DESC)))
 
 (defn delete!
   [notification]
