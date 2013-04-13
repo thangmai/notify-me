@@ -52,34 +52,44 @@ padding: 0 0 10px 5px;
 }
 
 th, td, caption {
-font-weight: normal;
-vertical-align: top;
-text-align: left;
+    font-weight: normal;
+    vertical-align: top;
+    text-align: left;
 }
 
 label.error {
-background: #FFC;
-color: #C00;
-/*font-style: italic;*/
+    color: #C00;
 }
 
 input.error, select.error, textarea.error {
-background-color: #FEE;
+    background-color: #FFC; 
+    border:1px solid #D8000C;
 }
 
+
+
 #form-message {
-    background: #FFC;
-    border: 1px solid;
+    background-color: #f6f6f6;
+    border: 1px dotted ;
     border-color: #EEE #DDD #CCC;
     padding: 15px 15px 15px 20px; 
     background-repeat: no-repeat;
     background-position: 10px center;
+	margin-top:30px
 }
 
 #form-message.error-msg {
     color: #D8000C;
-    background-color: #FFBABA;
     background-image: url('../images/error.png');
+	background-position: 15px 8px;
+	border-color:#D8000C;
+}
+
+#form-message.error-msg ul {
+    margin:0px
+    ;margin-left:36px;
+    list-style:none;
+    padding-left:0px
 }
 
 #form-message.notice-msg {
