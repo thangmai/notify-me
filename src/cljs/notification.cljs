@@ -45,9 +45,9 @@
 
 (defn draggable-row
   "Creates a draggable row when a drag starts"
-  [table event]
+  [drag-row event]
   (let [tr (-> (js/$ (.-target event)) (.closest "tr"))
-        position (-> (js/$ table) .dataTable (.fnGetPosition (.get tr 0)))
+        position (-> (js/$ (.-parent (.-parent drag-row))) .dataTable (.fnGetPosition (.get tr 0)))
         row (-> (js/$ "<div class='drag-row'><table></table></div>")
                 (.find "table")
                 (.append (.clone tr))
@@ -74,16 +74,15 @@
 
 (defn- delete-recipient
   "Deletes a given recipient from a specified table, assumes the recipient has an index"
-  [table recipient]
-  (-> (js/$ table) .dataTable (.fnDeleteRow (:index recipient))))
+  [drag-row recipient]
+  (-> (js/$ (.parent (.parent drag-row))) .dataTable (.fnDeleteRow (:index recipient))))
 
 (defn setup-drag-drop
   "Setups drag and drop between a source and target tables"
   [source target]
   (.draggable source (clj->js {
                                :helper (fn [event] (draggable-row source event))
-                               :appendTo "body"
-                      }))
+                               :appendTo "body"}))
   (.droppable target (clj->js {
                                :drop (fn [event ui]
                                        (this-as table
@@ -91,9 +90,7 @@
                                                   (do
                                                     (add-recipient table recipient)
                                                     (delete-recipient source recipient)))))
-                               :accept (.-selector source)
-                      })))
-
+                               :accept (.-selector source)})))
 
 
 (defn on-type-changed
@@ -117,8 +114,8 @@
   []
   (.dataTable (js/$ "#available-recipients"))
   (.dataTable (js/$ "#assigned-recipients"))
-  (setup-drag-drop (js/$ "#available-recipients") (js/$ "#assigned-recipients"))
-  (setup-drag-drop (js/$ "#assigned-recipients") (js/$ "#available-recipients"))
+  (setup-drag-drop (js/$ "#available-recipients tr") (js/$ "#assigned-recipients"))
+  (setup-drag-drop (js/$ "#assigned-recipients tr") (js/$ "#available-recipients"))
   (events/listen! (d/by-id "save")
                   :click
                   save-notification)

@@ -65,6 +65,7 @@
                            (include-css "/css/forms.css")
                            (include-css "/css/jquery.dataTables.css")
                            (include-css "/css/login.css")
+                           (include-css "/css/jquery-ui-1.8.13.custom.css")
                            (include-js "/scripts/jquery-1.7.2.min.js")
                            (include-js "/scripts/jquery-ui-1.8.13.custom.min.js")
                            (include-js "/scripts/jquery.dataTables.min.js")

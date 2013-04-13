@@ -71,9 +71,9 @@
 
 (defn draggable-row
   "Creates a draggable row when a drag starts"
-  [table event]
+  [drag-row event]
   (let [tr (-> (js/$ (.-target event)) (.closest "tr"))
-        position (-> (js/$ table) .dataTable (.fnGetPosition (.get tr 0)))
+        position (-> (js/$ (.-parent (.-parent drag-row))) .dataTable (.fnGetPosition (.get tr 0)))
         row (-> (js/$ "<div class='drag-row'><table></table></div>")
                 (.find "table")
                 (.append (.clone tr))
@@ -102,8 +102,8 @@
 
 (defn- delete-contact
   "Deletes a given contact from a specified table, assumes the contact has an index"
-  [table contact]
-  (-> (js/$ table) .dataTable (.fnDeleteRow (:index contact))))
+  [drag-row contact]
+  (-> (js/$ (.parent (.parent drag-row))) .dataTable (.fnDeleteRow (:index contact))))
 
 (defn setup-drag-drop
   "Setups drag and drop between a source and target tables"
@@ -126,8 +126,8 @@
   []
   (.dataTable (js/$ "#available-contacts"))
   (.dataTable (js/$ "#assigned-contacts"))
-  (setup-drag-drop (js/$ "#available-contacts") (js/$ "#assigned-contacts"))
-  (setup-drag-drop (js/$ "#assigned-contacts") (js/$ "#available-contacts"))
+  (setup-drag-drop (js/$ "#available-contacts tr") (js/$ "#assigned-contacts"))
+  (setup-drag-drop (js/$ "#assigned-contacts tr") (js/$ "#available-contacts"))
   (events/listen! (d/by-id "save")
                   :click
                   save-group)
