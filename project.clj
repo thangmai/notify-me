@@ -1,4 +1,4 @@
-(defproject notify-me "0.4.0-SNAPSHOT"
+(defproject notify-me "0.4.1-SNAPSHOT"
   :description "Notify-Me Web App"
   :url "http://notifyme.com"
   :license {:name "Eclipse Public License"

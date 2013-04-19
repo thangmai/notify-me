@@ -33,6 +33,9 @@
           (f/label "callerid" "Caller ID")
           (form/text-field action "callerid" (:callerid trunk)))
          (form/field
+          (f/label "prefix" "Prefijo")
+          (form/text-field action "prefix" (:prefix trunk)))
+         (form/field
           (f/label "capacity" "Líneas Disponibles")
           (form/text-field action "capacity" (:capacity trunk)))
          (form/field

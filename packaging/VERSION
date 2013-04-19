@@ -1,6 +1,6 @@
 
 PAQNAME=notify-me
-SOFTWARE=0.4.0
+SOFTWARE=0.4.1
 
 [ -z "$PACKAGE"  ] && PACKAGE=0000
 

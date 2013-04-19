@@ -61,11 +61,12 @@
     (let [trunk (model/get-trunk notification)
           call-id (.toString (java.util.UUID/randomUUID))
           prom (manager/set-user-data! call-id (promise))
+          contact-address (str (:prefix trunk) (:address contact))
           response (manager/action :Originate
                                    {:Channel (format "%s/%s/%s"
                                                      (:technology trunk)
                                                      (:number trunk)
-                                                     (:address contact))
+                                                     contact-address)
                                     :Context (:context trunk)
                                     :Exten (:extension trunk)
                                     :Priority (:priority trunk)

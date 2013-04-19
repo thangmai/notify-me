@@ -92,6 +92,7 @@
             (varchar :extension 20)
             (varchar :priority 20)
             (varchar :callerid 20)
+            (varchar :prefix 10)
             (varchar :host 100)
             (varchar :user 50)
             (varchar :password 50)

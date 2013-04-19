@@ -96,6 +96,7 @@ The fields to be configured are:
 * `Priority:` the priority to place the call when connected, `1` in the example above
 * `Extension:` the extension to place the call when connected, `1000` in the example above
 * `Caller Id:` the caller id to display to the contact when placing the call
+* `Prefix:` prefix to add to the dialed number when placing the call on the line, can be empty
 * `Capacity:` how many simultaneous calls can be placed using this trunk
 * `Host:` the asterisk host name or ip address
 * `User:` the asterisk manager user, `pepe` in the example above
