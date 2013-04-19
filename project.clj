@@ -35,7 +35,7 @@
                  ;;charts
                  [incanter "1.5.0-SNAPSHOT"]
                  ;;testing
-                 [midje "1.5.1"]
+                 [midje "1.4.0"]
                  ;;logging
                  [org.clojure/tools.logging "0.2.6"]
                  [org.slf4j/slf4j-log4j12 "1.6.4"]
