@@ -63,7 +63,7 @@ After that you will need to create a context in `/etc/asterisk/extensions.conf` 
 [notify-me-context]
 
 exten => 1000,1, NOOP(${MESSAGE})
-exten => 1000,2, AGI(render-wave.sh,${MESSAGE})
+exten => 1000,2, AGI(render-wave.sh,"${MESSAGE}")
 exten => 1000,3, Playback(beep);
 ```
 
@@ -77,7 +77,7 @@ The text to be rendered is placed by the application in the `${MESSAGE}` variabl
 
 If you have no particular preference you can take both the scripts available at [the google tts shell][2] and place them with execute permissions in the directory:
 
-`/usr/share/asterisk/agi-bin/`
+`/var/lib/asterisk/agi-bin/`
 
 **Note: if you're using the google-tts script above, you will need a `sox` version installed that can read mp3 files.**
 
