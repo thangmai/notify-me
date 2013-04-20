@@ -78,8 +78,8 @@
 (defn display-notifications
   [notifications]
   (layout/create-entity-table "entity-table"
-                              [[:status "Estado"]
-                               [:created "Iniciada"]
+                              [[:created "Iniciada"]
+                               [:status "Estado"]
                                [:type "Tipo" get-type-image]
                                [:message "Mensaje"]]
                               notifications
