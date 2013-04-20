@@ -58,7 +58,6 @@ Documentation is a work in progress
 * Use chiba's plugin for sms providers
 * Integrate selenium tests for UI
 * Pagination, grids and dispatchers
-* Weird accents not working for tts rendering
 
 ## License
 
