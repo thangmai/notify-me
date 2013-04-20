@@ -138,5 +138,7 @@
         (manager/with-connection context
           (process notification context)
           (manager/logout))
-        (log/error (format "Unable to login to host %s for notification %s" (:host trunk) (:id notification))))))
+        (do (when (model/cancelling? notification)
+              (model/update-status! notification "FINISHED"))
+            (log/error (format "Unable to login to host %s for notification %s" (:host trunk) (:id notification)))))))
   (log/info "Finishing dispatch for " (:id notification)))
