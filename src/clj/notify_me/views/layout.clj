@@ -92,25 +92,30 @@
   "Page not found")
 
 (defn create-entity-table
-  [id columns entities actions]
-  [:div
-   [:table {:id id}
-    [:thead
-     ;;actions header has no title
-     [:tr (map (fn [column] [:th (column 1)]) columns) [:th ""]]]
-    [:tbody
-     (map (fn [e]
-            [:tr
-             ;;column fields
-             (map (fn
-                    [c]
-                    [:td (if-let [f (get c 2)]
-                           (f e)
-                           (get e (c 0)))])
-                  columns)
-             ;;actions
-             [:td
-              (map (fn [a] [:a {:href (format (a 0) (:id e))} (a 1)]) actions)]])
-          entities)]]
-   [:script {:type "text/javascript" :language "javascript"}
-    (format "$('#%s').dataTable()" id)]])
+  ([id columns entities actions]
+     (create-entity-table id columns entities actions [0 :asc]))
+  ([id columns entities actions sorting]
+     [:div
+      [:table {:id id}
+       [:thead
+        ;;actions header has no title
+        [:tr (map (fn [column] [:th (column 1)]) columns) [:th ""]]]
+       [:tbody
+        (map (fn [e]
+               [:tr
+                ;;column fields
+                (map (fn
+                       [c]
+                       [:td (if-let [f (get c 2)]
+                              (f e)
+                              (get e (c 0)))])
+                     columns)
+                ;;actions
+                [:td
+                 (map (fn [a] [:a {:href (format (a 0) (:id e))} (a 1)]) actions)]])
+             entities)]]
+      [:script {:type "text/javascript" :language "javascript"}
+       (format "$('#%s').dataTable({ 'aaSorting' : [[%s, '%s']] })" 
+               id
+               (get sorting 0 0)
+               (name (get sorting 1 :asc)))]]))

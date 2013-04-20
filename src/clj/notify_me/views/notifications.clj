@@ -78,13 +78,14 @@
 (defn display-notifications
   [notifications]
   (layout/create-entity-table "entity-table"
-                              [[:created "Iniciada"]
-                               [:status "Estado"]
+                              [[:status "Estado"]
+                               [:created "Iniciada"]
                                [:type "Tipo" get-type-image]
                                [:message "Mensaje"]]
                               notifications
                               [["/notifications/%s/view" "Ver"]
-                               ["/notifications/%s/cancel" "Cancelar"]]))
+                               ["/notifications/%s/cancel" "Cancelar"]]
+                              [1 :desc]))
 
 (defn index
   [notifications]
