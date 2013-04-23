@@ -59,6 +59,7 @@
   (log/info "Dialing contact " (:address contact) " for notification " (:id notification))
   (manager/with-connection context
     (let [trunk (model/get-trunk notification)
+          timeout-secs (or (:no_answer_timeout trunk) 30)
           call-id (.toString (java.util.UUID/randomUUID))
           prom (manager/set-user-data! call-id (promise))
           contact-address (str (:prefix trunk) (:address contact))
@@ -70,7 +71,7 @@
                                     :Context (:context trunk)
                                     :Exten (:extension trunk)
                                     :Priority (:priority trunk)
-                                    :Timeout 60000
+                                    :Timeout (* timeout-secs 1000)
                                     :CallerID (:callerid trunk)
                                     :Variables [(format "MESSAGE=%s" (:message notification))
                                                 (format "CALLID=%s" call-id)]})]

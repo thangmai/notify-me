@@ -32,7 +32,8 @@
 
 (defentity delivery_policy
   (belongs-to office)
-  (prepare #(str->int % :retries_on_error :busy_interval_secs :no_answer_retries :no_answer_interval_secs :retries_on_busy)))
+  (prepare #(str->int % :retries_on_error :busy_interval_secs :no_answer_retries 
+                      :no_answer_interval_secs :retries_on_busy :no_answer_timeout)))
 
 (defentity trunk
   (belongs-to office)

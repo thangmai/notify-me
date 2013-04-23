@@ -23,6 +23,10 @@
                                           :range [10 600]}
                             :messages {:required "Los segundos de reintento por no atención son requeridos"
                                        :range "Los segundos de reintento deben ser un valor entre 10 y 600"}}
+  :no_answer_timeout {:validations {:required true
+                                    :range [10 600]}
+                      :messages {:required "Los segundos de espera por no atención son requeridos"
+                                 :range "Los segundos de espera deben ser un valor entre 10 y 600"}}
   :busy_interval_secs {:validations {:required true
                                      :range [10 600]}
                        :messages {:required "Los segundos de reintento por ocupado son requeridos"

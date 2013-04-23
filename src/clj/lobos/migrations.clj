@@ -76,6 +76,7 @@
             (integer :retries_on_busy (default 5))
             (integer :no_answer_interval_secs (default 300))
             (integer :no_answer_retries (default 5))
+            (integer :no_answer_timeout (default 20))
             (refer-to :office)))
       (create (index :delivery_policy [:name :office_id] :unique)))
   (down []

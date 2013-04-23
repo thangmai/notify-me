@@ -28,7 +28,10 @@
           (form/text-field action "busy_interval_secs" (:busy_interval_secs policy)))
          (form/field
           (f/label "no_answer_interval_secs" "Intervalo si no atiende(segs)")
-          (form/text-field action "no_answer_interval_secs" (:no_answer_interval_secs policy))))
+          (form/text-field action "no_answer_interval_secs" (:no_answer_interval_secs policy)))
+         (form/field
+          (f/label "no_answer_timeout" "Timeout no atiende(segs)")
+          (form/text-field action "no_answer_timeout" (:no_answer_timeout policy))))
    (form/input-button "save" "Guardar")
    (form/input-button "cancel" "Cancelar")])
 
