@@ -61,9 +61,9 @@
            (model/update-status! notification "STOPPED")
        (or (seq contacts)
            (seq groups)) (let [failed-contacts (filter #(= (:status %) "FAILED")
-                                                       (map #(send-direct-sms notification %) contact-rcpts))
+                                                       (map #(send-direct-sms notification %) contacts))
                                failed-groups (filter #(= (:status %) "FAILED")
-                                                     (map #(send-group-sms notification %) group-rcpts))]
+                                                     (map #(send-group-sms notification %) groups))]
                            (recur (map :recipient failed-contacts)
                                   (map :recipient failed-groups)))))))
 

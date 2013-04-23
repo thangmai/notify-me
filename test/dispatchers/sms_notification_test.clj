@@ -124,6 +124,37 @@
              (admin/unregister-phone "1" "1" anything) => true :times 2)))
 
 
+(fact "Real notification process, one contacts connect, one fails"
+      (do 
+        (let [c1 (merge (contact/create! {:name "contact 1" :type "P" :cell_phone "1"}) {:type "C"})
+              c2 (merge (contact/create! {:name "contact 1" :type "P" :cell_phone "2"}) {:type "C"})
+              policy1 (policy/create! {:name "test"})
+              n (set-notification
+                 (notification/create! {:id "00004023"
+                                        :type "SMS"
+                                        :status "CREATED"
+                                        :message "message"
+                                        :delivery_policy_id (:id policy1)
+                                        :members [{:id (:id c1) :type "C"}
+                                                  {:id (:id c2) :type "C"}]}))]
+          ;;recipient group status
+          (let [result (dispatcher/dispatch n)
+                r1 (find-recipient c1 "C" n)
+                r2 (find-recipient c2 "C" n)]
+            (contact/delete! c1)
+            (contact/delete! c2)
+            (notification/delete! n)
+            (policy/delete! policy1)
+            {:state (:status result)
+             :r1 (:last_status r1) 
+             :r2 (:last_status r2)})) => {:r1 "CONNECTED" :r2 "CANCELLED" :state "FINISHED"}
+            (provided 
+             (messaging/to-cellphone "1" "1" "message") => true :times 1
+             (messaging/to-cellphone "1" "2" "message") => false :times 4
+             (admin/phone-registered? "1" anything) => false :times 2
+             (admin/register-phone "1" "1" anything) => true :times 2
+             (admin/unregister-phone "1" "1" anything) => true :times 2)))
+
 (fact "Real notification process, one group connects"
       (do 
         (let [c1 (merge (contact/create! {:name "contact 1" :type "P" :cell_phone "1"}) {:type "C"})
