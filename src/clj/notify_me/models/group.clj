@@ -32,11 +32,11 @@
      ;;to prune and reinsert than to diff against the DB
      (delete e/contact_group_member
              (where {:contact_group_id (str->int (:id attributes))}))
-     (map #(insert e/contact_group_member
-                        (values {:contact_group_id (str->int (:id attributes))
-                                 :contact_id (str->int (:id %))
-                                 :office_id (:office_id attributes)}))
-             members))
+     (doall (map #(insert e/contact_group_member
+                          (values {:contact_group_id (str->int (:id attributes))
+                                   :contact_id (str->int (:id %))
+                                   :office_id (:office_id attributes)}))
+                 members)))
     (assoc group :members members)))
 
 (defn- get-members

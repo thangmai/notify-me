@@ -127,9 +127,10 @@
 
 (defn- update-group
   "When a group changes, remove the phones not there anymore and add the new ones"
-  [update-fn conditions group]
-  (let [current-group (group/one {:id (:id group)})]
-    (when-let [new-group (update-fn conditions group)]
+  [update-fn conditions attributes]
+  (let [current-group (group/one conditions)]
+    (when-let [new-group (update-fn conditions attributes)]
+      (println (:members new-group))
       (let [old-members (:members current-group)
             new-members (:members new-group)
             to-delete (filter (fn [old] 
@@ -155,7 +156,8 @@
          (catch :type e
            (log/error e))
          (catch Object _
-           (log/error (:throwable &throw-context)))))))))
+           (log/error (:throwable &throw-context))))))
+      new-group)))
 
 (add-hook #'group/create! #'register-group)
 (add-hook #'group/delete! #'unregister-group)
