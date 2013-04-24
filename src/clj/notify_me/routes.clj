@@ -36,13 +36,13 @@
   
   ;;controllers
   (context "/offices" request (friend/wrap-authorize offices/routes #{:admin}))
-  (context "/users" request (friend/wrap-authorize users/routes #{:user}))
-  (context "/contacts" request (friend/wrap-authorize contacts/routes #{:user}))
-  (context "/groups" request (friend/wrap-authorize groups/routes #{:user}))
-  (context "/policies" request (friend/wrap-authorize policies/routes #{:user}))
-  (context "/trunks" request (friend/wrap-authorize trunks/routes #{:user}))
-  (context "/notifications" request (friend/wrap-authorize notifications/routes #{:user}))
-  (context "/tts" request (friend/wrap-authorize tts/routes #{:user}))
+  (context "/users" request (friend/wrap-authorize users/routes #{:office-admin}))
+  (context "/contacts" request (friend/wrap-authorize contacts/routes #{:user :office-admin}))
+  (context "/groups" request (friend/wrap-authorize groups/routes #{:user :office-admin}))
+  (context "/policies" request (friend/wrap-authorize policies/routes #{:office-admin}))
+  (context "/trunks" request (friend/wrap-authorize trunks/routes #{:office-admin}))
+  (context "/notifications" request (friend/wrap-authorize notifications/routes #{:user :office-admin}))
+  (context "/tts" request (friend/wrap-authorize tts/routes #{:user :office-admin}))
   
   ;; auth
   (GET "/login" request session/show-new)

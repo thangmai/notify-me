@@ -42,7 +42,7 @@
 (defn- validate-admin
   [office]
   (if (d/by-id "username")
-    (let [admin (merge office {:roles [:user]})]
+    (let [admin (merge office {:roles [:office-admin]})]
       (binding [*is-unique?* (fn [x] true)] ;;new office user always is unique
        (validate admin user-rules/rules {}
               (fn [errors]

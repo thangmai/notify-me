@@ -64,7 +64,7 @@
 (defn create!
   "Creates a new user, all users are created as standard users, no admins"
   [params]
-  (let [user (merge params {:roles [:user] :office_id (current-office-id)})]
+  (let [user (merge params {:office_id (current-office-id)})]
     (validate-and-save user (fn [] (model/create! user)))))
 
 (defn update!

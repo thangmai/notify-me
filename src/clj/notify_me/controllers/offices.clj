@@ -83,7 +83,7 @@
   [params]
   (merge
    (select-keys params [:username :password :password-match :email])
-   {:roles [:user]}))
+   {:roles [:office-admin]}))
 
 (defn create!
   "Creates a new office, assumes first user gets posted with the

@@ -21,6 +21,9 @@
           (f/label "email" "Email")
           (f/email-field "email" (:email user)))
          (form/field
+          (f/label "roles" "Rol")
+          (f/drop-down "roles" [["Usuario" "user"] ["Administrador" "office-admin"]] (name (or (first (:roles user)) ""))))
+         (form/field
           (f/label "password" "Clave")
           (f/password-field  "password" (and user "xxxxxxxx")))
          (form/field

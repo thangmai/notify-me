@@ -45,11 +45,10 @@
 
 (defn- get-user
   "Retrieves the current user values from the input fields.
-   The function defaults the user role to :user in order to pass validaton since it's not optional
    If the user isn't new and the password wasn't changed, it does not submit those fields"
   []
   (let [user-values (f/serialize-form "user-form")
-        user (merge user-values {:roles [:user]})
+        user (assoc user-values :roles [(keyword (:roles user-values))])
         user-id (get-user-id)]
     (if (not (is-new?))
       (assoc (if (not @validate-password)
