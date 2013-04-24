@@ -45,8 +45,7 @@
   (layout/create-entity-table "entity-table"
                               [[:name "Nombre"] [:description "Descripción"]]
                               offices
-                              [["/offices/%s/edit" "Editar"]
-                               ["/offices/%s/delete" "Borrar"]]))
+                              [["/offices/%s/edit" "Editar"]]))
 
 (defn index [offices]
   (layout/common :offices
