@@ -122,9 +122,9 @@
                                              count(case when status='CONNECTED' then 1 else null end) as connected
                                       FROM message_delivery
                                       WHERE recipient_id = %s AND
-                                            recipient_type = 'C' AND
+                                            recipient_type = '%s' AND
                                             notification = '%s'"
-                                     (:id contact) (:id notification))]
+                                     (:id contact) (if (= "G" (:type contact)) "G" "C") (:id notification))]
                             (into [] results)))]
       (or (nil? attempts)
           (and (-> (:connected attempts) (> 0) not)

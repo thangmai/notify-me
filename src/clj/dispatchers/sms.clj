@@ -26,7 +26,7 @@
                  "CONNECTED")
         cause (model/get-cause-name notification result)]
     (log/info (format "Saving result %s for contact %s on notification %s" status (pr-str recipient) (:id notification)))
-    (model/save-delivery recipient notification status cause)
+    (model/save-delivery recipient notification status cause (:type recipient))
     ;;so far update-group-results is not called since there is no group expansion
     (model/update-contact-result notification recipient (:type recipient) status)
     {:status status :recipient recipient}))
@@ -46,7 +46,7 @@
         group-name (:name (group-model/one {:id group-id}))
         message (:message notification)
         result (sms-to-group *driver* group-name message)]
-    (save-result notification {:address group-name :id group-id :type "G"} result)))
+    (save-result notification (merge group-rcpt {:address group-name :id group-id :type "G"}) result)))
 
 (defn process
   "Main notification loop"
