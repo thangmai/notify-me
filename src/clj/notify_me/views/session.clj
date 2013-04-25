@@ -26,7 +26,7 @@
   []
   [:div {:id "login-form" :class "innerContainer"}
    (form/form-to [:post "/login"]
-                 [:label {:for "username" :class "loginLabel"} "Usuario"]
+                 [:label {:for "username" :class "loginLabel"} "Email"]
                  [:input {:type  "text"
                           :name  "username"
                           :id    "username"
