@@ -14,11 +14,21 @@
    [cljs.reader :as reader]))
 
 
+(defn- get-rules
+  []
+  (let [limit (d/attr (d/by-id "message-counter") :sms-limit)
+        is-sms? (= "SMS" (d/value (d/by-id "type")))]
+    (if (and is-sms? limit (>= (js/parseInt limit) 0))
+      (assoc-in 
+       (assoc-in rules/rules [:message :validations :max-length] (js/parseInt limit))
+       [:message :messages :max-length] (format "El mensaje no puede superar los %s caracteres" limit))
+      rules/rules)))
+
 (defn- validate-and-save
   "Validates the group is a valid one and submits the form in that case"
   [notification]
   (f/remove-errors)
-  (validate notification rules/rules {}
+  (validate notification (get-rules) {}
               (fn [errors]
                 (if (empty? errors)
                   (f/post-form "notification-form" notification)
@@ -92,14 +102,38 @@
                                                     (delete-recipient source recipient)))))
                                :accept (.-selector source)})))
 
+(defn display-sms-limit
+  []
+  (let [counter-label (d/by-id "message-counter")
+        limit (d/attr counter-label :sms-limit)]
+    (when (and limit (> (js/parseInt limit) 0))
+      (let [length (count (d/value (d/by-id "message")))
+            remains (- (js/parseInt limit) length)]
+        (d/set-text! counter-label remains)
+        (if (>= remains 0)
+          (-> counter-label (d/add-class! "on-limit") (d/remove-class! "off-limit"))
+          (-> counter-label (d/add-class! "off-limit") (d/remove-class! "on-limit")))))))
+
+(defn clear-sms-limit
+  []
+  (d/set-text! (d/by-id "message-counter") ""))
 
 (defn on-type-changed
   [event]
   (let [type (d/value (d/by-id "type"))
         trunk-row (.-parentNode (.-parentNode (d/by-id "trunk_id")))]
     (case type
-      "CALL" (d/set-styles! trunk-row {:display "table-row"})
-      "SMS" (d/set-styles! trunk-row {:display "none"}))))
+      "CALL" (do 
+               (d/set-styles! trunk-row {:display "table-row"})
+               (clear-sms-limit))
+      "SMS" (do 
+              (d/set-styles! trunk-row {:display "none"})
+              (display-sms-limit)))))
+
+(defn on-message-changed
+  [event]
+  (when (= "SMS" (d/value (d/by-id "type")))
+    (display-sms-limit)))
 
 (defn tts-url
   []
@@ -122,6 +156,9 @@
   (events/listen! (d/by-id "cancel")
                   :click
                   f/back)
+  (events/listen! (d/by-id "message")
+                  :keyup
+                  on-message-changed)
   (events/listen! (d/by-id "type")
                   :change
                   on-type-changed)

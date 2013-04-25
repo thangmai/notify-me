@@ -8,7 +8,8 @@
                    :user "user"
                    :password "password"
                    :temp-dir "/tmp"
-                   :tts-command "text2mp3.sh"})
+                   :tts-command "text2mp3.sh"
+                   :sms-limit 160})
 
 (defn read-properties
   [file-name]

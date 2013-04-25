@@ -4,7 +4,8 @@
         [hiccup.def :only [defelem]])
   (:require [notify-me.views.layout :as layout]
             [hiccup.form :as f]
-            [notify-me.views.forms :as form]))
+            [notify-me.views.forms :as form]
+            [notify-me.config :as config]))
 
 
 (def recipient-icons
@@ -32,9 +33,9 @@
   [:div {:id "notification-form"}
    [:p  {:id "form-message" :style "display:none"}]
    (form/form "/notifications/"
-         (form/field
-          (f/label "message" "Mensaje")
-          (f/text-area "message"))
+         [:tr [:td (f/label "message" "Mensaje")] 
+              [:td (f/text-area "message") 
+              [:label {:id "message-counter" :sms-limit (:sms-limit config/opts)}]] ]
          [:tr [:td] [:td [:div {:class "ui360"} [:a {:href "#" :id "play-tts"} "Escuchar"]]]]
          (form/field
           (f/label "type" "Tipo de contacto")

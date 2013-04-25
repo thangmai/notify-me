@@ -16,6 +16,7 @@ host="localhost"
 user="user"
 password="password"
 tts-command="/opt/notify-me/text2mp3.sh"
+sms-limit=160
 ```
 
 * `port` is the port number for the web server to use
@@ -23,8 +24,13 @@ tts-command="/opt/notify-me/text2mp3.sh"
 * `user` is the database user
 * `password` is the database password
 * `tts-command` is the file doing the tts rendering to wave
+* `sms-limit` is the maximum characters allowed for sms messages, leave at `0` for unlimited
 
 It's assumed the tts executable file will output the rendered file name so you may need to wrap whatever you're using in a shell script. For a specific example you can look at the [Google TTS][2] shell script which uses the Google TTS online service.
+
+When the `sms-limit` parameter is set the notification form will show how many remaining characters the message has, only for SMS notifications.
+
+![SMS Character Limit](images/sms-limit.png?raw=true)
 
 ## Asterisk Configuration
 
