@@ -122,12 +122,16 @@
                                :accept (.-selector source)
                       })))
 
+(defn- drag-and-drop-bindings
+  []
+  (setup-drag-drop (js/$ "#available-contacts tr") (js/$ "#assigned-contacts"))
+  (setup-drag-drop (js/$ "#assigned-contacts tr") (js/$ "#available-contacts")))
+
 (defn ^:export main
   []
-  (.dataTable (js/$ "#available-contacts"))
-  (.dataTable (js/$ "#assigned-contacts"))
-  (setup-drag-drop (js/$ "#available-contacts tr") (js/$ "#assigned-contacts"))
-  (setup-drag-drop (js/$ "#assigned-contacts tr") (js/$ "#available-contacts"))
+  (.dataTable (js/$ "#available-contacts") (clj->js {:fnDrawCallback drag-and-drop-bindings}))
+  (.dataTable (js/$ "#assigned-contacts") (clj->js {:fnDrawCallback drag-and-drop-bindings}))
+  (drag-and-drop-bindings)
   (events/listen! (d/by-id "save")
                   :click
                   save-group)

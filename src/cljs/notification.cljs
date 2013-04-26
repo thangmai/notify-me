@@ -144,12 +144,16 @@
   [event]
   (d/set-attr! (d/by-id "play-tts") "a" (tts-url)))
 
+(defn drag-and-drop-bindings
+  []
+  (setup-drag-drop (js/$ "#available-recipients tr") (js/$ "#assigned-recipients"))
+  (setup-drag-drop (js/$ "#assigned-recipients tr") (js/$ "#available-recipients")))
+
 (defn ^:export main
   []
-  (.dataTable (js/$ "#available-recipients"))
-  (.dataTable (js/$ "#assigned-recipients"))
-  (setup-drag-drop (js/$ "#available-recipients tr") (js/$ "#assigned-recipients"))
-  (setup-drag-drop (js/$ "#assigned-recipients tr") (js/$ "#available-recipients"))
+  (.dataTable (js/$ "#available-recipients") (clj->js {:fnDrawCallback drag-and-drop-bindings}))
+  (.dataTable (js/$ "#assigned-recipients") (clj->js {:fnDrawCallback drag-and-drop-bindings}))
+  (drag-and-drop-bindings)
   (events/listen! (d/by-id "save")
                   :click
                   save-notification)
