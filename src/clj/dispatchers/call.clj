@@ -15,11 +15,14 @@
     (let [unique-id (:Uniqueid event)
           call-id (manager/get-user-data unique-id)
           prom (manager/get-user-data call-id)]
-      (log/info (format "Hanging up call %s with unique id %s" call-id unique-id))
-      (deliver prom event)
-      (manager/remove-user-data! call-id) ;;FIX: this should be done
-      ;;on the waiting side or promise may get lost
-      (manager/remove-user-data! unique-id))))
+      (if call-id
+        (do
+          (log/info (format "Hanging up call %s with unique id %s" call-id unique-id))
+          (deliver prom event)
+          (manager/remove-user-data! call-id) ;;FIX: this should be done
+          ;;on the waiting side or promise may get lost
+          (manager/remove-user-data! unique-id))
+        (log/error (format "Hanging up call with unique id %s no call found" unique-id))))))
 
 ;; When CALLID is set, relate it to the call unique-id
 ;; to be used later in hangup detection
@@ -133,13 +136,14 @@
 (defmethod dispatcher/dispatch "CALL"
   [notification]
   (let [trunk (model/get-trunk notification)] 
-    (log/info (format "Notification %s, connecting to asterisk at %s" (:id notification) (:host trunk)))
-    (manager/with-config {:name (:host trunk)}
-      (if-let [context (manager/login (:user trunk) (:password trunk) :with-events)]
-        (manager/with-connection context
-          (process notification context)
-          (manager/logout))
-        (do (when (model/cancelling? notification)
-              (model/update-status! notification "FINISHED"))
-            (log/error (format "Unable to login to host %s for notification %s" (:host trunk) (:id notification)))))))
+    (when (model/is-trunk-free? notification)
+      (log/info (format "Notification %s, connecting to asterisk at %s" (:id notification) (:host trunk)))
+      (manager/with-config {:name (:host trunk)}
+        (if-let [context (manager/login (:user trunk) (:password trunk) :with-events)]
+          (manager/with-connection context
+            (process notification context)
+            (manager/logout))
+          (do (when (model/cancelling? notification)
+                (model/update-status! notification "FINISHED"))
+              (log/error (format "Unable to login to host %s for notification %s" (:host trunk) (:id notification))))))))
   (log/info "Finishing dispatch for " (:id notification)))

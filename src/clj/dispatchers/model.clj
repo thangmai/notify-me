@@ -226,6 +226,13 @@
   (let [notification (notification-model/one {:id (:id notification)})]
     (= (:status notification) "CANCELLING")))
 
+(defn is-trunk-free?
+  [notification]
+  (let [processing (notification-model/search {:trunk_id (:trunk_id notification)
+                                               :status "RUNNING"
+                                               :type "CALL"})]
+    (not (seq processing))))
+
 (defn update-status!
   [notification status]
   (notification-model/update! {:id (:id notification)}
