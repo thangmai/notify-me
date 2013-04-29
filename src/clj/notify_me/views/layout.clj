@@ -2,6 +2,7 @@
   (:require [notify-me.models.permissions :as permissions]
             [ring.util.response :as response])
   (:use [hiccup.core :only [html]]
+        [notify-me.models.permissions]
         [hiccup.page :only [doctype include-css include-js]]))
 
 (defn- header
@@ -17,7 +18,8 @@
   [:div {:class "grid_12"} "2013 © Copyright Intception . All rights reserved"])
 
 (def menu-actions
-  (array-map :offices ["Oficinas" "/offices"]
+  (array-map :configuration ["Configuración" #(format "/users/%s/configuration" (current-user-id))]
+             :offices ["Oficinas" "/offices"]
              :users ["Usuarios" "/users"]
              :contacts ["Contactos" "/contacts"]
              :groups ["Grupos" "/groups"]
@@ -32,8 +34,9 @@
    (fn [l entry]
      (if (contains? actions (entry 0))
        (let [menu-data (entry 1)
-             style (if (= (entry 0) selected) "selected" "")]
-         (conj l [:li {:class style} [:a {:href (menu-data 1)} (menu-data 0)]]))
+             style (if (= (entry 0) selected) "selected" "")
+             url (menu-data 1)]
+         (conj l [:li {:class style} [:a {:href (if (fn? url) (url) url)} (menu-data 0)]]))
        l))
    [] menu-actions))
 

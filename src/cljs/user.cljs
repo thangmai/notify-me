@@ -48,7 +48,9 @@
    If the user isn't new and the password wasn't changed, it does not submit those fields"
   []
   (let [user-values (f/serialize-form "user-form")
-        user (assoc user-values :roles [(keyword (:roles user-values))])
+        user (if (:roles user-values) 
+               (assoc user-values :roles [(keyword (:roles user-values))])
+               user-values)
         user-id (get-user-id)]
     (if (not (is-new?))
       (assoc (if (not @validate-password)

@@ -12,11 +12,13 @@
   (belongs-to office)
   (prepare
    (fn [attributes]
-     (-> (if (:password attributes)
-           (assoc attributes :password (creds/hash-bcrypt (:password attributes)))
-           attributes)
-         (assoc :roles (str (:roles attributes)))
-         (dissoc :password-match))))
+     (let [attrs (-> (if (:password attributes)
+                       (assoc attributes :password (creds/hash-bcrypt (:password attributes)))
+                       attributes)
+                     (dissoc :password-match))]
+       (if (:roles attributes)
+         (assoc attrs :roles (str (:roles attributes)))
+         attrs))))
   (transform #(deserialize % :roles)))
 
 (defentity contact

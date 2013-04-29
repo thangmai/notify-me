@@ -20,9 +20,10 @@
          (form/field
           (f/label "email" "Email")
           (f/email-field "email" (:email user)))
-         (form/field
-          (f/label "roles" "Rol")
-          (f/drop-down "roles" [["Usuario" "user"] ["Administrador" "office-admin"]] (name (or (first (:roles user)) ""))))
+         (when (not= action :configuration)
+           (form/field
+            (f/label "roles" "Rol")
+            (f/drop-down "roles" [["Usuario" "user"] ["Administrador" "office-admin"]] (name (or (first (:roles user)) "")))))
          (form/field
           (f/label "password" "Clave")
           (f/password-field  "password" (and user "xxxxxxxx")))
@@ -53,7 +54,8 @@
 (defn- get-title
   [action user]
   (get {:new "Nuevo Usuario"
-        :edit (:username user)} action))
+        :edit (:username user)
+        :configuration (format "Configuración de %s" (:username user))} action))
 
 (defn render-form
   ([action]

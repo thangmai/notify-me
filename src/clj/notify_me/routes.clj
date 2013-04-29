@@ -36,7 +36,7 @@
   
   ;;controllers
   (context "/offices" request (friend/wrap-authorize offices/routes #{:admin}))
-  (context "/users" request (friend/wrap-authorize users/routes #{:office-admin}))
+  (context "/users" request (friend/wrap-authorize users/routes #{:user :office-admin}))
   (context "/contacts" request (friend/wrap-authorize contacts/routes #{:user :office-admin}))
   (context "/groups" request (friend/wrap-authorize groups/routes #{:user :office-admin}))
   (context "/policies" request (friend/wrap-authorize policies/routes #{:office-admin}))

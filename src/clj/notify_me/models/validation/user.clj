@@ -24,6 +24,4 @@
                                   :matches :password}
                     :messages {:required "Debe reingresar la clave"
                                :matches "Las claves no coinciden"
-                               }}
-   :roles {:validations {:required true}
-           :messages {:required "Debe seleccionar un rol para el usuario"}}})
+                               }}})

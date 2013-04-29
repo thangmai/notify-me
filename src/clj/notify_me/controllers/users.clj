@@ -41,6 +41,12 @@
   (when-let [user (model/one {:id (str->int id)})]
     (view/render-form :edit user)))
 
+(defn configuration
+  [id]
+  (when (= id (str (current-user-id)))
+    (when-let [user (model/one {:id (current-user-id)})]
+      (view/render-form :configuration user))))
+
 (defn show-new
   "Render empty user form"
   []
@@ -89,6 +95,7 @@
 (defroutes routes
   (GET "/" [] (all))
   (GET "/new" [] (show-new))
+  (GET "/:id/configuration" [id] (configuration id))
   (POST "/" request (create! (read-string (slurp (:body request)))))
   (GET "/:username" [username] (show username))
   (GET "/:username/edit" [username] (edit username))
