@@ -63,7 +63,9 @@
   ([action user]
      (render-form action user nil))
   ([action user errors]
-     (layout/common :users
+     (layout/common (if (= action :configuration) 
+                      :configuration
+                      :users)
                     (get-title action user)
                     (user-form action user errors)
                     [:div {:id "user-id" :style "display:none"} (:id user)]
