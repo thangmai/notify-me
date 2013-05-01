@@ -46,23 +46,30 @@
 
 (defmethod model/normal-clearing? "CALL"
   [notification result]
-  (= "16" (:Cause result)))
+  (= "4" (:Reason result)))
 
 (defmethod model/get-cause-name "CALL"
   [notification result]
-  (case (:Cause result)
-    "17" "BUSY"
-    "19" "NO ANSWER"
-    "FAILED"))
+  (if (= (:type result) :clj-asterisk.internal.core/timeout)
+    "NO ANSWER"
+    (case (:Reason result)
+      "5" "BUSY"
+      "8" "BUSY"
+      "3" "NO ANSWER"
+      "4" "CONNECTED"
+      "0" "FAILED"
+      "FAILED")))
 
 (defn call
   "Call a contact and wait till the call ends.
    Function returns the hangup event or nil if timedout"
   [context notification contact]
-  (log/info "Dialing contact " (:address contact) " for notification " (:id notification))
+  (log/info "Dialing contact" (:address contact) "for notification" (:id notification))
   (manager/with-connection context
     (let [trunk (model/get-trunk notification)
-          timeout-secs (or (:no_answer_timeout trunk) 30)
+          policies (model/get-policies notification)
+          timeout-secs (or (:no_answer_timeout policies) 30)
+          _ (log/info "Timeout for" (:address contact) "is" timeout-secs)
           call-id (.toString (java.util.UUID/randomUUID))
           prom (manager/set-user-data! call-id (promise))
           contact-address (str (:prefix trunk) (:address contact))
@@ -76,15 +83,14 @@
                                     :Priority (:priority trunk)
                                     :Timeout (* timeout-secs 1000)
                                     :CallerID (:callerid trunk)
+                                    :Async "true"
                                     :Variables [(format "MESSAGE=%s" (:message notification))
                                                 (format "CALLID=%s" call-id)]})]
+      (log/info "Dial returned" (:Response response) ":" (:Reason response) 
+                "for contact" (:address contact) "on notification" (:id notification))
       (model/save-result notification
                          contact
-                         (if (manager/success? response)
-                           (deref prom 200000 {:error ::timeout}) ;;TODO
-                           ;;where to i get timeout from? it depends on the
-                           ;;call/prompt length
-                           (deref prom 10000 {:error ::timeout}))))))
+                         (assoc response :Cause (:Reason response))))))
 
 (defn dispatch-calls
   "Returns the list of futures of each call thread (one p/contact)"

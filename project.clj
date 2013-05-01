@@ -26,7 +26,7 @@
                  [com.cemerick/friend "0.1.2"]
                  [crypto-random "1.1.0"]
                  ;;asterisk
-                 [clj-asterisk "0.2.1"]
+                 [clj-asterisk "0.2.2"]
                  ;;sms library
                  [clj-ancel-sms "0.1.0"]
                  [robert/hooke "1.3.0"]
