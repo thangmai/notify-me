@@ -41,7 +41,7 @@
 (def actions-by-role
   (array-map :admin #{:offices}
              :user #{:notifications :contacts :groups :configuration}
-             :office-admin #{:users :trunks :policies :notifications :contacts :groups}))
+             :office-admin #{:users :trunks :policies :notifications :contacts :groups :configuration}))
 
 (defn get-user-actions
   []
