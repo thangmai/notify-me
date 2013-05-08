@@ -119,7 +119,7 @@
               (varchar :type 10)
               (varchar :status 20)
               (timestamp :created (default (now)))
-              (varchar :message 200)
+              (varchar :message 500)
               (refer-to :office)
               (refer-to :sms_provider)
               (refer-to :trunk)
