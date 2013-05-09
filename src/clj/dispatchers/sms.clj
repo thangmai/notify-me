@@ -33,7 +33,7 @@
 
 (defn- send-direct-sms
   [notification contact]
-  (log/info "Sending message to number " (:address contact) " from notification " (:id notification))
+  (log/info "Sending message to number" (:address contact) "from notification" (:id notification))
   (let [number (:address contact)
         message (:message notification)
         result (sms-to-number *driver* number message)]
@@ -41,7 +41,7 @@
 
 (defn- send-group-sms
   [notification group-rcpt]
-  (log/info "Sending message to group " (:recipient_id group-rcpt) " from notification " (:id notification))
+  (log/info "Sending message to group" (:recipient_id group-rcpt) "from notification" (:id notification))
   (let [group-id (:recipient_id group-rcpt)
         group-name (:name (group-model/one {:id group-id}))
         message (:message notification)
@@ -51,7 +51,7 @@
 (defn process
   "Main notification loop"
   [notification]
-  (log/info "Processing SMS notification " (:id notification))
+  (log/info "Processing SMS notification" (:id notification))
   (let [recipients (model/retrieve-rcpt notification)
         contact-rcpts (model/direct-contacts notification)
         group-rcpts (filter #(= "G" (:recipient_type %)) recipients)]
