@@ -32,26 +32,32 @@
      (catch Object _
        {:error (pr-str (:throwable &throw-context))}))))
 
-(defn driver
+;;the driver is needed since hooked methods need a way to access configuration without
+;;being explicitly invoked
+(def driver (atom nil))
+
+(defn load-driver
   [configuration] 
   (log/info "Initializing Ancel SMS with service" 
              (:service configuration)
              "and tracking,"
              (:tracking configuration))
   (if (:service configuration)
-    (SMSEmpresa. (:service configuration) 
-                 (:tracking configuration))
+    (let [d (SMSEmpresa. (:service configuration) 
+                         (:tracking configuration))]
+      (reset! driver d)
+      d)
     (throw+ {:type :invalid-sms-config :message "Please add the proper SMS service parameters in /etc/notify-me.sms.conf"})))
 
 ;;Hooks for groups and contacts synchronization
 
-(defn- register-phone-number
+(defn register-phone-number
   "Registers the phone number when a new contact is saved"
   [save-fn attributes]
   (when-let [contact (save-fn attributes)]
     (try+
-     (when (not (admin/phone-registered? (:service driver) (:cell_phone attributes)))
-       (admin/register-phone (:service driver) (:tracking driver) (:cell_phone attributes)))
+     (when (not (admin/phone-registered? (:service @driver) (:cell_phone attributes)))
+       (admin/register-phone (:service @driver) (:tracking @driver) (:cell_phone attributes)))
      (catch :type e
        (log/error e))
      (catch Object _
@@ -65,7 +71,7 @@
   (when-let [deleted (delete-fn c)]
     (when (nil? (seq (contact/search {:cell_phone (:cell_phone c)})))
       (try+ 
-       (admin/unregister-phone (:service driver) (:tracking driver) (:cell_phone c))
+       (admin/unregister-phone (:service @driver) (:tracking @driver) (:cell_phone c))
        (catch :type e
          (log/error e))
        (catch Object _
@@ -81,17 +87,17 @@
             new-number (:cell_phone new-contact)]
         (when (not= old-number new-number)
           (try+
-           (admin/unregister-phone (:service driver) (:tracking driver) old-number)
-           (when (not (admin/phone-registered? (:service driver) new-number))
-             (admin/register-phone (:service driver) (:tracking driver) new-number))
+           (admin/unregister-phone (:service @driver) (:tracking @driver) old-number)
+           (when (not (admin/phone-registered? (:service @driver) new-number))
+             (admin/register-phone (:service @driver) (:tracking @driver) new-number))
            ;;groups should be searched by contact since same number may have not changed
            ;;for another office
            (let [phone-groups (group/groups-for-contact (:id current-contact))]
              (doseq [group phone-groups]
-               (admin/rmv-phone-from-group (:service driver)
+               (admin/rmv-phone-from-group (:service @driver)
                                            old-number
                                            (:name group))
-               (admin/add-phone-to-group (:service driver)
+               (admin/add-phone-to-group (:service @driver)
                                          new-number
                                          (:name group))))
            (catch :type e
@@ -104,15 +110,15 @@
 (add-hook #'contact/delete! #'unregister-phone-number)
 (add-hook #'contact/update! #'update-phone-number)
 
-(defn- register-group
+(defn register-group
   "Creates a new group in the ANCEL database"
   [save-fn attributes]
   (when-let [group (save-fn attributes)]
     (try+
-     (when (not (admin/group-exists? (:service driver) (:name group)))
-       (admin/create-group (:service driver) (:name group))
+     (when (not (admin/group-exists? (:service @driver) (:name group)))
+       (admin/create-group (:service @driver) (:name group))
        (doseq [contact (:members group)]
-         (admin/add-phone-to-group (:service driver)
+         (admin/add-phone-to-group (:service @driver)
                                    (:cell_phone contact)
                                    (:name group))))
      (catch :type e
@@ -126,7 +132,7 @@
   [delete-fn group]
   (when-let [group (delete-fn group)]
     (try+
-     (admin/delete-group (:service driver) (:name group))
+     (admin/delete-group (:service @driver) (:name group))
      (catch :type e
        (log/error e))
      (catch Object _
@@ -149,7 +155,7 @@
                            new-members)]
       (doseq [d to-delete]
         (try+
-         (admin/rmv-phone-from-group (:service driver)
+         (admin/rmv-phone-from-group (:service @driver)
                                    (:cell_phone d)
                                    (:name current-group))
          (catch :type e
@@ -158,7 +164,7 @@
            (log/error (:throwable &throw-context)))))
       (doseq [a to-add]
         (try+ 
-         (admin/add-phone-to-group (:service driver)
+         (admin/add-phone-to-group (:service @driver)
                                    (:cell_phone a)
                                    (:name current-group))
          (catch :type e

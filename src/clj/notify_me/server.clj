@@ -2,6 +2,7 @@
   (:gen-class)
   (:require
    [notify-me.webserver :as webserver]
+   [sms-drivers.driver :as sms-driver]
    [clojurewerkz.quartzite.scheduler :as qs]
    [notify-me.jobs.notifier :as notifier]
    [clj-logging-config.log4j :as log-config]
@@ -28,21 +29,31 @@
   (stop [this]
     (webserver/stop)))
 
-(defrecord App [job-manager web-service]
+(defrecord SmsDriver []
+  Lifecycle
+  (start [this]
+    (sms-driver/load))
+  (stop [this]
+    (sms-driver/unload)))
+
+(defrecord App [job-manager web-service sms-dispatcher]
   Lifecycle
   (start [_]
     (log/info "Starting Application")
     (start job-manager)
-    (start web-service))
+    (start web-service)
+    (start sms-dispatcher))
   (stop [_]
     (log/info "Shutting Down Application")
     (stop job-manager)
-    (stop web-service)))
+    (stop web-service)
+    (stop sms-dispatcher)))
 
 (defn prod-system []
   (let [web-service (->JettyWeb)
-        job-manager (->QuartzJobs)]
-    (->App job-manager web-service)))
+        job-manager (->QuartzJobs)
+        sms-dispatcher (->SmsDriver)]
+    (->App job-manager web-service sms-dispatcher)))
 
 (defn -main
   [& args]

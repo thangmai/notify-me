@@ -9,5 +9,10 @@
 
 (defn load
   []
-  (let [dr (resolve (symbol (name driver-ns) "driver"))]
+  (let [dr (resolve (symbol (name driver-ns) "load-driver"))]
     (@dr config/sms-opts)))
+
+(defn unload
+  "TODO"
+  []
+  (comment "This should disconnect sms driver if needed"))
