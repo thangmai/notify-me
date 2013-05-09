@@ -1,5 +1,6 @@
 (ns sms-drivers.driver
-  (:refer-clojure :exclude [load]))
+  (:refer-clojure :exclude [load])
+  (:require [notify-me.config :as config]))
 
 ;; Dynamically loads the driver to use for sms dispatching
  ;;TODO: this should be configured dynamically somewhere
@@ -9,4 +10,4 @@
 (defn load
   []
   (let [dr (resolve (symbol (name driver-ns) "driver"))]
-    @dr))
+    (@dr config/sms-opts)))

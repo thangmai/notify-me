@@ -32,8 +32,16 @@
      (catch Object _
        {:error (pr-str (:throwable &throw-context))}))))
 
-;;TODO: this configuration could be coming out of somewhere
-(def driver (SMSEmpresa. "1" "1"))
+(defn driver
+  [configuration] 
+  (log/info "Initializing Ancel SMS with service" 
+             (:service configuration)
+             "and tracking,"
+             (:tracking configuration))
+  (if (:service configuration)
+    (SMSEmpresa. (:service configuration) 
+                 (:tracking configuration))
+    (throw+ {:type :invalid-sms-config :message "Please add the proper SMS service parameters in /etc/notify-me.sms.conf"})))
 
 ;;Hooks for groups and contacts synchronization
 

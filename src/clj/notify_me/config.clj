@@ -23,3 +23,5 @@
      {})))
 
 (def opts (merge default-opts (read-properties "/etc/notify-me.conf")))
+
+(def sms-opts (read-properties "/etc/notify-me.sms.conf"))
