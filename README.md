@@ -44,6 +44,17 @@ Now, SMS integration is done only with `Ancel SMS Empresa` using the [clj-ancel-
 
 Extension is not only desirable but possible, since each sms provider is treated as a plugin complying with a dispatching protocol.
 
+YourKit
+----
+
+YourKit has given an open source license for their profiler, greatly simplifying the profiling of `Notify-Me` performance.
+
+YourKit is kindly supporting open source projects with its full-featured Java Profiler. YourKit, LLC is the creator of innovative and intelligent tools for profiling Java and .NET applications. Take a look at YourKit's leading software products:
+
+* <a href="http://www.yourkit.com/java/profiler/index.jsp">YourKit Java Profiler</a> and
+* <a href="http://www.yourkit.com/.net/profiler/index.jsp">YourKit .NET Profiler</a>.
+
+
 ## Docs
 
 Documentation is a work in progress
